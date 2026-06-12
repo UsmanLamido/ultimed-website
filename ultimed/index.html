@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ULTI-MED Content Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0B1120;--deep:#112240;--accent:#00C896;--gold:#F4A922;
+  --danger:#E5484D;--surface:#F5F8FF;--card:#fff;--muted:#64748B;
+  --border:#E2E8F0;--text:#1E293B;--white:#fff;
+  --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font);background:var(--surface);color:var(--text);min-height:100vh;}
+
+/* TOP BAR */
+.topbar{background:var(--ink);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:fixed;top:0;left:0;right:0;z-index:200;}
+.topbar-brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
+.logo-box{width:32px;height:32px;background:linear-gradient(135deg,#00C896,#007A5C);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;color:white;}
+.brand-text{color:white;font-size:1rem;font-weight:700;}
+.brand-text span{color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.cms-badge{background:rgba(0,200,150,.15);border:1px solid rgba(0,200,150,.3);color:var(--accent);font-size:.7rem;font-weight:700;padding:.2rem .7rem;border-radius:50px;}
+.btn-logout{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:.35rem .9rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:var(--font);}
+.btn-logout:hover{background:rgba(255,255,255,.15);}
+
+/* LAYOUT */
+.layout{display:flex;margin-top:56px;min-height:calc(100vh - 56px);}
+.sidebar{width:220px;background:var(--deep);position:fixed;top:56px;left:0;bottom:0;overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar-section{padding:1.2rem 1rem .4rem;font-size:.67rem;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;}
+.sidebar-item{display:flex;align-items:center;gap:.7rem;padding:.62rem 1rem;margin:.12rem .6rem;border-radius:9px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.83rem;font-weight:500;cursor:pointer;transition:all .18s;border:none;background:none;width:calc(100% - 1.2rem);text-align:left;}
+.sidebar-item:hover{background:rgba(255,255,255,.06);color:white;}
+.sidebar-item.active{background:rgba(0,200,150,.15);color:var(--accent);font-weight:600;}
+.s-icon{font-size:1rem;width:20px;text-align:center;}
+.sidebar-count{margin-left:auto;background:var(--accent);color:var(--ink);font-size:.67rem;font-weight:700;padding:.12rem .42rem;border-radius:50px;}
+.sidebar-footer{margin-top:auto;padding:1rem;border-top:1px solid rgba(255,255,255,.07);}
+.sidebar-footer a{display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,.4);font-size:.8rem;text-decoration:none;padding:.45rem .4rem;border-radius:7px;transition:color .2s;}
+.sidebar-footer a:hover{color:var(--accent);}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;padding:2rem 2.5rem;}
+.page{display:none;}
+.page.active{display:block;}
+.page-header{margin-bottom:1.8rem;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;}
+.page-header h1{font-size:1.6rem;font-weight:700;color:var(--ink);}
+.page-header p{font-size:.87rem;color:var(--muted);margin-top:.2rem;}
+
+/* CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.1rem;margin-bottom:1.8rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;}
+.stat-card-label{font-size:.73rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;}
+.stat-card-value{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1;}
+.stat-card-value.green{color:#008A67;}
+.stat-card-value.red{color:var(--danger);}
+.stat-card-value.blue{color:#2563EB;}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.6rem;}
+.table-header{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);}
+.table-header h3{font-size:.97rem;font-weight:700;color:var(--ink);}
+.table-actions{display:flex;gap:.6rem;align-items:center;}
+table{width:100%;border-collapse:collapse;}
+th{padding:.75rem 1.1rem;text-align:left;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border);}
+td{padding:.85rem 1.1rem;font-size:.85rem;color:var(--text);border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,200,150,.02);}
+
+/* FORM CARD */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.8rem;margin-bottom:1.6rem;}
+.form-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.form-card>p{font-size:.84rem;color:var(--muted);margin-bottom:1.4rem;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+.fgroup{margin-bottom:.9rem;}
+.fgroup label{display:block;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:.35rem;}
+.fgroup input,.fgroup select,.fgroup textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.62rem .88rem;font-size:.87rem;font-family:var(--font);color:var(--text);outline:none;transition:border-color .2s;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{border-color:var(--accent);}
+.fgroup textarea{height:85px;resize:vertical;}
+.toggle-wrap{display:flex;align-items:center;gap:.6rem;}
+.toggle{width:42px;height:24px;background:var(--border);border-radius:50px;position:relative;cursor:pointer;transition:background .2s;border:none;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;}
+.toggle.on::after{left:21px;}
+.toggle-label{font-size:.84rem;color:var(--muted);}
+
+/* BUTTONS */
+.btn{padding:.48rem 1.05rem;border-radius:7px;font-size:.82rem;font-weight:600;font-family:var(--font);cursor:pointer;border:none;transition:all .18s;text-decoration:none;display:inline-block;}
+.btn-sm{padding:.35rem .8rem;font-size:.77rem;}
+.btn-accent{background:var(--accent);color:var(--ink);}
+.btn-accent:hover{opacity:.88;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:rgba(229,72,77,.1);color:var(--danger);border:1px solid rgba(229,72,77,.2);}
+.btn-danger:hover{background:var(--danger);color:white;}
+.btn-ghost{background:rgba(0,200,150,.1);color:#007A5C;border:1px solid rgba(0,200,150,.2);}
+.search-input{padding:.4rem .85rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:var(--font);outline:none;background:var(--surface);}
+.search-input:focus{border-color:var(--accent);}
+
+/* PILLS */
+.pill{display:inline-block;padding:.22rem .68rem;border-radius:50px;font-size:.7rem;font-weight:700;}
+.pill-green{background:rgba(0,200,150,.12);color:#007A5C;}
+.pill-blue{background:rgba(59,130,246,.12);color:#1D4ED8;}
+.pill-yellow{background:rgba(244,169,34,.14);color:#92620A;}
+.pill-red{background:rgba(229,72,77,.12);color:#B91C1C;}
+.pill-gray{background:rgba(100,116,139,.1);color:#475569;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:var(--ink);padding:.85rem 1.35rem;border-radius:12px;font-weight:700;font-size:.87rem;z-index:999;transform:translateY(120%);transition:transform .3s;box-shadow:0 8px 30px rgba(0,200,150,.35);}
+.toast.show{transform:translateY(0);}
+.toast.error{background:var(--danger);color:white;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:white;border-radius:16px;padding:2rem;max-width:520px;width:100%;position:relative;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.18);}
+.modal-close{position:absolute;top:.9rem;right:.9rem;background:var(--surface);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;}
+.modal-box h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;}
+.modal-box>p{font-size:.85rem;color:var(--muted);margin-bottom:1.4rem;}
+
+/* LOADING */
+.loading{text-align:center;padding:3rem;color:var(--muted);font-size:.9rem;}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* VIDEO THUMB */
+.video-thumb-preview{width:60px;height:40px;background:linear-gradient(135deg,var(--deep),var(--ink));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);}
+  .main{margin-left:0;padding:1.2rem 1rem;}
+  .frow,.frow3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('videoModal')">✕</button>
+    <h3 id="video-modal-title">Add Video</h3>
+    <p>Fill in the video details. Paste the full YouTube URL.</p>
+    <input type="hidden" id="v-id"/>
+    <div class="fgroup"><label>Video Title *</label><input type="text" id="v-title" placeholder="e.g. ULTI-MED Full System Overview"/></div>
+    <div class="fgroup"><label>Description</label><textarea id="v-desc" placeholder="Brief description of what this video covers..."></textarea></div>
+    <div class="fgroup"><label>YouTube URL</label><input type="text" id="v-url" placeholder="https://www.youtube.com/watch?v=XXXXXXXXX"/></div>
+    <div class="frow">
+      <div class="fgroup"><label>Category</label>
+        <select id="v-cat"><option>Overview</option><option>Revenue</option><option>Safety</option><option>Compliance</option><option>AI</option><option>Training</option></select>
+      </div>
+      <div class="fgroup"><label>Duration</label><input type="text" id="v-duration" placeholder="e.g. 8:45"/></div>
+    </div>
+    <div class="frow">
+      <div class="fgroup"><label>Thumbnail Emoji</label><input type="text" id="v-thumb" placeholder="🏥"/></div>
+      <div class="fgroup"><label>Sort Order</label><input type="number" id="v-sort" placeholder="1" min="1"/></div>
+    </div>
+    <div class="fgroup">
+      <label>Published</label>
+      <div class="toggle-wrap">
+        <button class="toggle on" id="v-published" onclick="this.classList.toggle('on')"></button>
+        <span class="toggle-label">Show on website</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-top:.5rem;">
+      <button class="btn btn-accent" style="flex:1" onclick="saveVideo()">Save Video</button>
+      <button class="btn btn-outline" onclick="closeM('videoModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="downloadModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('downloadModal')">✕</button>
+    <h3 id="dl-modal-title">Add Download</h3>
+    <p>Add a document to the Download Centre. Paste a Google Drive or direct file link.</p>
+    <input type="hidden" id="dl-id"/>
+    <div class="fgroup"><label>File Title *</label><input type="text" id="dl-title" placeholder="e.g. NHIS Compliance Checklist 2025"/></div>
+    <div class="fgroup"><label>Description</label><textarea id="dl-desc" placeholder="Brief description of the document..."></textarea></div>
+    <div class="fgroup"><label>File URL / Google Drive Link *</label><input type="text" id="dl-url" placeholder="https://drive.google.com/file/d/..."/></div>
+    <div class="frow">
+      <div class="fgroup"><label>File Type</label>
+        <select id="dl-type"><option value="pdf">PDF</option><option value="ppt">PPT/PPTX</option><option value="doc">DOC/DOCX</option><option value="xls">XLS/XLSX</option></select>
+      </div>
+      <div class="fgroup"><label>File Icon (emoji)</label><input type="text" id="dl-icon" placeholder="📄"/></div>
+    </div>
+    <div class="frow">
+      <div class="fgroup"><label>File Size</label><input type="text" id="dl-size" placeholder="e.g. 2.4 MB"/></div>
+      <div class="fgroup"><label>Visibility</label>
+        <select id="dl-visibility"><option value="public">Public</option><option value="private">Private</option></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-top:.5rem;">
+      <button class="btn btn-accent" style="flex:1" onclick="saveDownload()">Save Download</button>
+      <button class="btn btn-outline" onclick="closeM('downloadModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="testimonialModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('testimonialModal')">✕</button>
+    <h3 id="tm-modal-title">Add Testimonial</h3>
+    <p>Add a client testimonial. Set Published to ON when ready to show on the website.</p>
+    <input type="hidden" id="tm-id"/>
+    <div class="fgroup"><label>Quote *</label><textarea id="tm-quote" placeholder="The Service Gate alone recovered ₦1.3 million in our first quarter..."></textarea></div>
+    <div class="frow">
+      <div class="fgroup"><label>Author Name *</label><input type="text" id="tm-name" placeholder="Dr. E. Okafor"/></div>
+      <div class="fgroup"><label>Author Initials (for avatar)</label><input type="text" id="tm-initials" placeholder="EO" maxlength="3"/></div>
+    </div>
+    <div class="fgroup"><label>Role / Title</label><input type="text" id="tm-role" placeholder="Medical Director"/></div>
+    <div class="fgroup"><label>Hospital Name</label><input type="text" id="tm-hospital" placeholder="120-Bed Private Hospital, Abuja"/></div>
+    <div class="fgroup">
+      <label>Published (show on website)</label>
+      <div class="toggle-wrap">
+        <button class="toggle" id="tm-published" onclick="this.classList.toggle('on')"></button>
+        <span class="toggle-label">Off until ready</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-top:.5rem;">
+      <button class="btn btn-accent" style="flex:1" onclick="saveTestimonial()">Save Testimonial</button>
+      <button class="btn btn-outline" onclick="closeM('testimonialModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="../index.html" class="topbar-brand">
+    <div class="logo-box">U</div>
+    <span class="brand-text">ULTI<span>-MED</span> CMS</span>
+  </a>
+  <div class="topbar-right">
+    <span class="cms-badge">CONTENT MANAGER</span>
+    <a href="../index.html" style="color:rgba(255,255,255,.5);font-size:.8rem;text-decoration:none;">← View Website</a>
+    <button class="btn-logout" onclick="showToast('Logged out')">Logout</button>
+  </div>
+</div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section">Content</div>
+  <button class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="s-icon">📊</span>Dashboard</button>
+  <button class="sidebar-item" onclick="showPage('videos',this)"><span class="s-icon">📹</span>Videos<span class="sidebar-count" id="videos-count">—</span></button>
+  <button class="sidebar-item" onclick="showPage('downloads',this)"><span class="s-icon">📥</span>Downloads<span class="sidebar-count" id="downloads-count">—</span></button>
+  <button class="sidebar-item" onclick="showPage('features',this)"><span class="s-icon">⭐</span>Features<span class="sidebar-count" id="features-count">—</span></button>
+  <button class="sidebar-item" onclick="showPage('testimonials',this)"><span class="s-icon">💬</span>Testimonials<span class="sidebar-count" id="testimonials-count">—</span></button>
+  <div class="sidebar-section">Leads & Sales</div>
+  <button class="sidebar-item" onclick="showPage('leads',this)"><span class="s-icon">🗂️</span>Leads / CRM<span class="sidebar-count" id="leads-count" style="background:var(--danger);">—</span></button>
+  <button class="sidebar-item" onclick="showPage('proposals',this)"><span class="s-icon">📋</span>Proposals<span class="sidebar-count" id="proposals-count">—</span></button>
+  <button class="sidebar-item" onclick="showPage('audits',this)"><span class="s-icon">🔍</span>Audit Requests<span class="sidebar-count" id="audits-count" style="background:var(--danger);">—</span></button>
+  <div class="sidebar-section">Support</div>
+  <button class="sidebar-item" onclick="showPage('tickets',this)"><span class="s-icon">🎫</span>Support Tickets<span class="sidebar-count" id="tickets-count" style="background:var(--danger);">—</span></button>
+  <div class="sidebar-section">Settings</div>
+  <button class="sidebar-item" onclick="showPage('settings',this)"><span class="s-icon">⚙️</span>Site Settings</button>
+  <div class="sidebar-footer">
+    <a href="../index.html">🌐 View Website</a>
+    <a href="../portal.html">🗂️ View Portal</a>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div><h1>Content Dashboard</h1><p>Overview of all content and incoming leads.</p></div>
+    <button class="btn btn-accent" onclick="loadAll()">🔄 Refresh Data</button>
+  </div>
+  <div class="stats-row" id="dashboard-stats">
+    <div class="stat-card"><div class="stat-card-label">Videos</div><div class="stat-card-value blue" id="ds-videos">—</div></div>
+    <div class="stat-card"><div class="stat-card-label">Downloads</div><div class="stat-card-value blue" id="ds-downloads">—</div></div>
+    <div class="stat-card"><div class="stat-card-label">New Leads</div><div class="stat-card-value red" id="ds-leads">—</div></div>
+    <div class="stat-card"><div class="stat-card-label">Proposals</div><div class="stat-card-value" id="ds-proposals">—</div></div>
+    <div class="stat-card"><div class="stat-card-label">Open Tickets</div><div class="stat-card-value red" id="ds-tickets">—</div></div>
+    <div class="stat-card"><div class="stat-card-label">Audit Requests</div><div class="stat-card-value red" id="ds-audits">—</div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>Recent Leads</h3><button class="btn btn-outline btn-sm" onclick="showPage('leads',document.querySelector('[onclick*=leads]'))">View All</button></div>
+    <div id="recent-leads-body"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>Recent Support Tickets</h3><button class="btn btn-outline btn-sm" onclick="showPage('tickets',document.querySelector('[onclick*=tickets]'))">View All</button></div>
+    <div id="recent-tickets-body"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+</div>
+
+<!-- VIDEOS -->
+<div class="page" id="page-videos">
+  <div class="page-header">
+    <div><h1>Video Library</h1><p>Add, edit or hide demo videos shown on your website.</p></div>
+    <button class="btn btn-accent" onclick="openVideoModal()">+ Add Video</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Videos</h3><div class="table-actions"><input class="search-input" placeholder="Search..." oninput="filterTable(this,'videos-table')"/></div></div>
+    <div id="videos-table"><div class="loading"><div class="spinner"></div>Loading videos...</div></div>
+  </div>
+</div>
+
+<!-- DOWNLOADS -->
+<div class="page" id="page-downloads">
+  <div class="page-header">
+    <div><h1>Download Centre</h1><p>Manage all downloadable documents and resources.</p></div>
+    <button class="btn btn-accent" onclick="openDownloadModal()">+ Add Download</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Downloads</h3><div class="table-actions"><input class="search-input" placeholder="Search..." oninput="filterTable(this,'downloads-table')"/></div></div>
+    <div id="downloads-table"><div class="loading"><div class="spinner"></div>Loading downloads...</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="page" id="page-features">
+  <div class="page-header">
+    <div><h1>Features</h1><p>Manage the features shown on your website.</p></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Features</h3></div>
+    <div id="features-table"><div class="loading"><div class="spinner"></div>Loading features...</div></div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="page" id="page-testimonials">
+  <div class="page-header">
+    <div><h1>Testimonials</h1><p>Add client testimonials. Set Published ON when ready to show on website.</p></div>
+    <button class="btn btn-accent" onclick="openTestimonialModal()">+ Add Testimonial</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Testimonials</h3></div>
+    <div id="testimonials-table"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+</div>
+
+<!-- LEADS -->
+<div class="page" id="page-leads">
+  <div class="page-header">
+    <div><h1>Leads / CRM</h1><p>All leads from proposal requests, demo bookings and audit requests.</p></div>
+    <button class="btn btn-outline btn-sm" onclick="exportCSV('leads')">📊 Export CSV</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Leads</h3><div class="table-actions"><input class="search-input" placeholder="Search leads..." oninput="filterTable(this,'leads-table')"/></div></div>
+    <div id="leads-table"><div class="loading"><div class="spinner"></div>Loading leads...</div></div>
+  </div>
+</div>
+
+<!-- PROPOSALS -->
+<div class="page" id="page-proposals">
+  <div class="page-header">
+    <div><h1>Proposals</h1><p>All proposal requests submitted through the website.</p></div>
+    <button class="btn btn-outline btn-sm" onclick="exportCSV('proposals')">📊 Export CSV</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Proposals</h3><div class="table-actions"><input class="search-input" placeholder="Search..." oninput="filterTable(this,'proposals-table')"/></div></div>
+    <div id="proposals-table"><div class="loading"><div class="spinner"></div>Loading proposals...</div></div>
+  </div>
+</div>
+
+<!-- AUDITS -->
+<div class="page" id="page-audits">
+  <div class="page-header">
+    <div><h1>Audit Requests</h1><p>All free audit requests submitted through the website.</p></div>
+    <button class="btn btn-outline btn-sm" onclick="exportCSV('audit_requests')">📊 Export CSV</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Audit Requests</h3></div>
+    <div id="audits-table"><div class="loading"><div class="spinner"></div>Loading audit requests...</div></div>
+  </div>
+</div>
+
+<!-- TICKETS -->
+<div class="page" id="page-tickets">
+  <div class="page-header">
+    <div><h1>Support Tickets</h1><p>All support tickets submitted by clients.</p></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>All Tickets</h3><div class="table-actions"><input class="search-input" placeholder="Search..." oninput="filterTable(this,'tickets-table')"/></div></div>
+    <div id="tickets-table"><div class="loading"><div class="spinner"></div>Loading tickets...</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="page-header"><div><h1>Site Settings</h1><p>Update contact details and site-wide text.</p></div></div>
+  <div class="form-card">
+    <h3>Contact Details</h3>
+    <p>These update across the entire website when saved.</p>
+    <div class="frow">
+      <div class="fgroup"><label>Phone Number 1</label><input type="text" id="s-phone1" placeholder="+234 803 776 6592"/></div>
+      <div class="fgroup"><label>Phone Number 2</label><input type="text" id="s-phone2" placeholder="+234 907 485 8480"/></div>
+    </div>
+    <div class="frow">
+      <div class="fgroup"><label>WhatsApp Number (digits only)</label><input type="text" id="s-whatsapp" placeholder="2348037766592"/></div>
+      <div class="fgroup"><label>Email Address</label><input type="email" id="s-email" placeholder="sales@ultimed.com.ng"/></div>
+    </div>
+    <div class="fgroup"><label>Hero Headline</label><input type="text" id="s-hero" placeholder="Your Hospital Is Losing Money Every Day..."/></div>
+    <div class="fgroup"><label>Hero Sub-text</label><textarea id="s-herotext" placeholder="ULTI-MED is the only HIS in Nigeria..."></textarea></div>
+    <button class="btn btn-accent" onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://bszvlohnmsrwdsjmxrvz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BvT_cKAgC0xRRX6yc_rNBA_NmdTENlt';
+
+async function sb(table, method='GET', body=null, id=null) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}${id?`?id=eq.${id}`:''}`;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': method==='POST'?'return=representation':'return=representation'
+  };
+  const opts = { method, headers };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function sbGet(table, params='') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}&order=sort_order.asc,created_at.desc`, {
+    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}
+  });
+  return res.json();
+}
+async function sbGetAll(table, params='') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}&order=created_at.desc`, {
+    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}
+  });
+  return res.json();
+}
+async function sbInsert(table, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method:'POST', headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(body)
+  });
+  return res.json();
+}
+async function sbUpdate(table, id, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method:'PATCH', headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(body)
+  });
+  return res.json();
+}
+async function sbDelete(table, id) {
+  await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method:'DELETE', headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}
+  });
+}
+
+function showToast(msg, err=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(err?' error':'');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
+}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  loadPage(id);
+}
+
+function filterTable(input, tableId) {
+  const q=input.value.toLowerCase();
+  const t=document.getElementById(tableId);
+  if(!t) return;
+  t.querySelectorAll('tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});
+}
+
+function pill(text, color='gray') {
+  const map={green:'pill-green',blue:'pill-blue',yellow:'pill-yellow',red:'pill-red',gray:'pill-gray'};
+  return `<span class="pill ${map[color]||'pill-gray'}">${text}</span>`;
+}
+
+function stagePill(stage) {
+  const map={'New Lead':'blue','Contacted':'gray','Demo Scheduled':'yellow','Proposal Sent':'yellow','Negotiation':'yellow','Closed Won':'green','Closed Lost':'red'};
+  return pill(stage, Object.entries(map).find(([k])=>stage.includes(k.split(' ')[0]))?.[1]||'gray');
+}
+
+function statusPill(status) {
+  const map={Open:'red','In Progress':'blue',Resolved:'green',Closed:'gray',Draft:'gray',Sent:'blue',Approved:'green',Signed:'green',New:'red'};
+  return pill(status, map[status]||'gray');
+}
+
+// ── DASHBOARD ──
+async function loadDashboard() {
+  try {
+    const [videos,downloads,features,testimonials,leads,proposals,tickets,audits] = await Promise.all([
+      sbGetAll('videos','published=eq.true'),
+      sbGetAll('downloads'),
+      sbGetAll('features'),
+      sbGetAll('testimonials'),
+      sbGetAll('leads'),
+      sbGetAll('proposals'),
+      sbGetAll('tickets','status=eq.Open'),
+      sbGetAll('audit_requests','status=eq.New')
+    ]);
+    document.getElementById('ds-videos').textContent = videos.length;
+    document.getElementById('ds-downloads').textContent = downloads.length;
+    document.getElementById('ds-leads').textContent = leads.length;
+    document.getElementById('ds-proposals').textContent = proposals.length;
+    document.getElementById('ds-tickets').textContent = tickets.length;
+    document.getElementById('ds-audits').textContent = audits.length;
+    document.getElementById('videos-count').textContent = videos.length;
+    document.getElementById('downloads-count').textContent = downloads.length;
+    document.getElementById('features-count').textContent = features.length;
+    document.getElementById('testimonials-count').textContent = testimonials.length;
+    document.getElementById('leads-count').textContent = leads.length;
+    document.getElementById('proposals-count').textContent = proposals.length;
+    document.getElementById('tickets-count').textContent = tickets.length;
+    document.getElementById('audits-count').textContent = audits.length;
+
+    // Recent leads
+    const recentLeads = await sbGetAll('leads','limit=5');
+    document.getElementById('recent-leads-body').innerHTML = `
+      <table><thead><tr><th>Hospital</th><th>Contact</th><th>Phone</th><th>Stage</th><th>Date</th></tr></thead>
+      <tbody>${(recentLeads||[]).slice(0,5).map(l=>`
+        <tr>
+          <td><strong>${l.hospital||'—'}</strong></td>
+          <td>${(l.first_name||'')+' '+(l.last_name||'')}</td>
+          <td>${l.phone||'—'}</td>
+          <td>${stagePill(l.stage||'New Lead')}</td>
+          <td style="font-size:.78rem;color:var(--muted)">${new Date(l.created_at).toLocaleDateString()}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+
+    // Recent tickets
+    const recentTickets = await sbGetAll('tickets','limit=5');
+    document.getElementById('recent-tickets-body').innerHTML = `
+      <table><thead><tr><th>Ticket #</th><th>Issue</th><th>Hospital</th><th>Priority</th><th>Status</th></tr></thead>
+      <tbody>${(recentTickets||[]).slice(0,5).map(t=>`
+        <tr>
+          <td style="font-family:var(--mono);font-size:.76rem">${t.ticket_number||'—'}</td>
+          <td><strong>${t.title}</strong></td>
+          <td>${t.hospital||'—'}</td>
+          <td>${pill(t.priority, t.priority==='High'||t.priority==='Critical'?'red':t.priority==='Medium'?'yellow':'green')}</td>
+          <td>${statusPill(t.status)}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  } catch(e) { showToast('Error loading dashboard: '+e.message, true); }
+}
+
+// ── VIDEOS ──
+async function loadVideos() {
+  try {
+    const data = await sbGetAll('videos');
+    document.getElementById('videos-table').innerHTML = `
+      <table id="videos-table-inner"><thead><tr><th>Thumb</th><th>Title</th><th>Category</th><th>Duration</th><th>YouTube</th><th>Published</th><th>Actions</th></tr></thead>
+      <tbody>${(data||[]).map(v=>`
+        <tr>
+          <td><div class="video-thumb-preview">${v.thumb_emoji||'🎬'}</div></td>
+          <td><strong>${v.title}</strong></td>
+          <td>${pill(v.category,'gray')}</td>
+          <td style="font-family:var(--mono);font-size:.78rem">${v.duration||'—'}</td>
+          <td style="font-size:.78rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;">${v.youtube_url?`<a href="${v.youtube_url}" target="_blank" style="color:var(--accent);">▶ View</a>`:'<span style="color:var(--muted)">Not set</span>'}</td>
+          <td>${v.published?pill('Published','green'):pill('Hidden','gray')}</td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="editVideo(${JSON.stringify(v).replace(/"/g,'&quot;')})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteVideo('${v.id}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  } catch(e) { showToast('Error loading videos', true); }
+}
+
+function openVideoModal(v=null) {
+  document.getElementById('video-modal-title').textContent = v ? 'Edit Video' : 'Add Video';
+  document.getElementById('v-id').value = v?.id||'';
+  document.getElementById('v-title').value = v?.title||'';
+  document.getElementById('v-desc').value = v?.description||'';
+  document.getElementById('v-url').value = v?.youtube_url||'';
+  document.getElementById('v-cat').value = v?.category||'Overview';
+  document.getElementById('v-duration').value = v?.duration||'';
+  document.getElementById('v-thumb').value = v?.thumb_emoji||'🏥';
+  document.getElementById('v-sort').value = v?.sort_order||1;
+  const pub = document.getElementById('v-published');
+  v?.published===false ? pub.classList.remove('on') : pub.classList.add('on');
+  openM('videoModal');
+}
+function editVideo(v) { openVideoModal(v); }
+
+async function saveVideo() {
+  const id = document.getElementById('v-id').value;
+  const body = {
+    title: document.getElementById('v-title').value,
+    description: document.getElementById('v-desc').value,
+    youtube_url: document.getElementById('v-url').value,
+    category: document.getElementById('v-cat').value,
+    duration: document.getElementById('v-duration').value,
+    thumb_emoji: document.getElementById('v-thumb').value||'🏥',
+    sort_order: parseInt(document.getElementById('v-sort').value)||1,
+    published: document.getElementById('v-published').classList.contains('on')
+  };
+  if(!body.title){showToast('Please enter a video title',true);return;}
+  try {
+    if(id) { await sbUpdate('videos',id,body); showToast('✅ Video updated!'); }
+    else { await sbInsert('videos',body); showToast('✅ Video added!'); }
+    closeM('videoModal'); loadVideos();
+  } catch(e){showToast('Error saving video',true);}
+}
+
+async function deleteVideo(id) {
+  if(!confirm('Delete this video?')) return;
+  await sbDelete('videos',id); showToast('Video deleted'); loadVideos();
+}
+
+// ── DOWNLOADS ──
+async function loadDownloads() {
+  try {
+    const data = await sbGetAll('downloads');
+    document.getElementById('downloads-table').innerHTML = `
+      <table><thead><tr><th>Icon</th><th>Title</th><th>Type</th><th>Size</th><th>Visibility</th><th>Link</th><th>Actions</th></tr></thead>
+      <tbody>${(data||[]).map(d=>`
+        <tr>
+          <td style="font-size:1.4rem">${d.file_icon||'📄'}</td>
+          <td><strong>${d.title}</strong><br/><span style="font-size:.76rem;color:var(--muted)">${d.description?.substring(0,60)||''}...</span></td>
+          <td>${pill(d.file_type?.toUpperCase()||'PDF','blue')}</td>
+          <td style="font-family:var(--mono);font-size:.78rem">${d.file_size||'—'}</td>
+          <td>${d.visibility==='public'?pill('Public','green'):pill('Private','gray')}</td>
+          <td style="font-size:.78rem">${d.file_url&&d.file_url!=='#'?`<a href="${d.file_url}" target="_blank" style="color:var(--accent);">View File</a>`:'<span style="color:var(--muted)">Not set</span>'}</td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="editDownload(${JSON.stringify(d).replace(/"/g,'&quot;')})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteDownload('${d.id}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  } catch(e){showToast('Error loading downloads',true);}
+}
+
+function openDownloadModal(d=null){
+  document.getElementById('dl-modal-title').textContent = d?'Edit Download':'Add Download';
+  document.getElementById('dl-id').value=d?.id||'';
+  document.getElementById('dl-title').value=d?.title||'';
+  document.getElementById('dl-desc').value=d?.description||'';
+  document.getElementById('dl-url').value=d?.file_url||'';
+  document.getElementById('dl-type').value=d?.file_type||'pdf';
+  document.getElementById('dl-icon').value=d?.file_icon||'📄';
+  document.getElementById('dl-size').value=d?.file_size||'';
+  document.getElementById('dl-visibility').value=d?.visibility||'public';
+  openM('downloadModal');
+}
+function editDownload(d){openDownloadModal(d);}
+
+async function saveDownload(){
+  const id=document.getElementById('dl-id').value;
+  const body={title:document.getElementById('dl-title').value,description:document.getElementById('dl-desc').value,file_url:document.getElementById('dl-url').value,file_type:document.getElementById('dl-type').value,file_icon:document.getElementById('dl-icon').value||'📄',file_size:document.getElementById('dl-size').value,visibility:document.getElementById('dl-visibility').value};
+  if(!body.title){showToast('Please enter a title',true);return;}
+  try{
+    if(id){await sbUpdate('downloads',id,body);showToast('✅ Download updated!');}
+    else{await sbInsert('downloads',body);showToast('✅ Download added!');}
+    closeM('downloadModal');loadDownloads();
+  }catch(e){showToast('Error saving',true);}
+}
+async function deleteDownload(id){if(!confirm('Delete?'))return;await sbDelete('downloads',id);showToast('Deleted');loadDownloads();}
+
+// ── FEATURES ──
+async function loadFeatures(){
+  try{
+    const data=await sbGetAll('features');
+    document.getElementById('features-table').innerHTML=`
+      <table><thead><tr><th>Icon</th><th>Title</th><th>Category</th><th>Published</th></tr></thead>
+      <tbody>${(data||[]).map(f=>`
+        <tr>
+          <td style="font-size:1.4rem">${f.icon}</td>
+          <td><strong>${f.title}</strong><br/><span style="font-size:.76rem;color:var(--muted)">${f.description?.substring(0,80)||''}...</span></td>
+          <td>${pill(f.tag_label,'blue')}</td>
+          <td>${f.published?pill('Visible','green'):pill('Hidden','gray')}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading features',true);}
+}
+
+// ── TESTIMONIALS ──
+async function loadTestimonials(){
+  try{
+    const data=await sbGetAll('testimonials');
+    document.getElementById('testimonials-count').textContent=data?.length||0;
+    document.getElementById('testimonials-table').innerHTML=`
+      <table><thead><tr><th>Author</th><th>Hospital</th><th>Quote</th><th>Published</th><th>Actions</th></tr></thead>
+      <tbody>${(data||[]).map(t=>`
+        <tr>
+          <td><strong>${t.author_name}</strong><br/><span style="font-size:.76rem;color:var(--muted)">${t.author_role||''}</span></td>
+          <td>${t.hospital||'—'}</td>
+          <td style="font-size:.82rem;max-width:200px;">"${t.quote?.substring(0,80)||''}..."</td>
+          <td>${t.published?pill('Live on site','green'):pill('Hidden (draft)','gray')}</td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="editTestimonial(${JSON.stringify(t).replace(/"/g,'&quot;')})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteTestimonial('${t.id}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading testimonials',true);}
+}
+function openTestimonialModal(t=null){
+  document.getElementById('tm-modal-title').textContent=t?'Edit Testimonial':'Add Testimonial';
+  document.getElementById('tm-id').value=t?.id||'';
+  document.getElementById('tm-quote').value=t?.quote||'';
+  document.getElementById('tm-name').value=t?.author_name||'';
+  document.getElementById('tm-initials').value=t?.author_initials||'';
+  document.getElementById('tm-role').value=t?.author_role||'';
+  document.getElementById('tm-hospital').value=t?.hospital||'';
+  const pub=document.getElementById('tm-published');
+  t?.published?pub.classList.add('on'):pub.classList.remove('on');
+  openM('testimonialModal');
+}
+function editTestimonial(t){openTestimonialModal(t);}
+async function saveTestimonial(){
+  const id=document.getElementById('tm-id').value;
+  const body={quote:document.getElementById('tm-quote').value,author_name:document.getElementById('tm-name').value,author_initials:document.getElementById('tm-initials').value,author_role:document.getElementById('tm-role').value,hospital:document.getElementById('tm-hospital').value,published:document.getElementById('tm-published').classList.contains('on')};
+  if(!body.quote||!body.author_name){showToast('Quote and author name required',true);return;}
+  try{
+    if(id){await sbUpdate('testimonials',id,body);showToast('✅ Testimonial updated!');}
+    else{await sbInsert('testimonials',body);showToast('✅ Testimonial added!');}
+    closeM('testimonialModal');loadTestimonials();
+  }catch(e){showToast('Error saving',true);}
+}
+async function deleteTestimonial(id){if(!confirm('Delete?'))return;await sbDelete('testimonials',id);showToast('Deleted');loadTestimonials();}
+
+// ── LEADS ──
+async function loadLeads(){
+  try{
+    const data=await sbGetAll('leads');
+    document.getElementById('leads-count').textContent=data?.length||0;
+    document.getElementById('leads-table').innerHTML=`
+      <table id="leads-table-inner"><thead><tr><th>Hospital</th><th>Contact</th><th>Phone</th><th>Email</th><th>Beds</th><th>Stage</th><th>Infrastructure</th><th>Date</th></tr></thead>
+      <tbody>${(data||[]).map(l=>`
+        <tr>
+          <td><strong>${l.hospital||'—'}</strong></td>
+          <td>${(l.first_name||'')+' '+(l.last_name||'')}<br/><span style="font-size:.75rem;color:var(--muted)">${l.role||''}</span></td>
+          <td>${l.phone||'—'}</td>
+          <td style="font-size:.78rem">${l.email||'—'}</td>
+          <td>${l.bed_count||'—'}</td>
+          <td>${stagePill(l.stage||'New Lead')}</td>
+          <td style="font-size:.75rem;color:var(--muted)">
+            ${l.lan_needed?`LAN:${l.lan_needed} `:''}
+            ${l.wifi_needed?`WiFi:${l.wifi_needed} `:''}
+            ${l.radiology_count?`Rad:${l.radiology_count}`:''}
+          </td>
+          <td style="font-size:.76rem;color:var(--muted)">${new Date(l.created_at).toLocaleDateString()}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading leads',true);}
+}
+
+// ── PROPOSALS ──
+async function loadProposals(){
+  try{
+    const data=await sbGetAll('proposals');
+    document.getElementById('proposals-count').textContent=data?.length||0;
+    document.getElementById('proposals-table').innerHTML=`
+      <table id="proposals-table-inner"><thead><tr><th>Ref #</th><th>Hospital</th><th>Contact</th><th>Modules</th><th>Value</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>${(data||[]).map(p=>`
+        <tr>
+          <td style="font-family:var(--mono);font-size:.76rem">${p.ref_number||'—'}</td>
+          <td><strong>${p.hospital}</strong></td>
+          <td>${p.contact_name||'—'}</td>
+          <td style="font-size:.78rem">${p.modules||'—'}</td>
+          <td style="font-weight:700;color:var(--accent)">${p.proposed_value||'—'}</td>
+          <td>${statusPill(p.status)}</td>
+          <td style="font-size:.76rem;color:var(--muted)">${new Date(p.created_at).toLocaleDateString()}</td>
+          <td>
+            <select class="search-input" style="font-size:.75rem;padding:.3rem .5rem;" onchange="updateProposalStatus('${p.id}',this.value)">
+              <option ${p.status==='Draft'?'selected':''}>Draft</option>
+              <option ${p.status==='Sent'?'selected':''}>Sent</option>
+              <option ${p.status==='Negotiation'?'selected':''}>Negotiation</option>
+              <option ${p.status==='Approved'?'selected':''}>Approved</option>
+              <option ${p.status==='Rejected'?'selected':''}>Rejected</option>
+            </select>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading proposals',true);}
+}
+async function updateProposalStatus(id,status){
+  await sbUpdate('proposals',id,{status});showToast('✅ Status updated!');
+}
+
+// ── AUDITS ──
+async function loadAudits(){
+  try{
+    const data=await sbGetAll('audit_requests');
+    document.getElementById('audits-count').textContent=(data||[]).filter(a=>a.status==='New').length;
+    document.getElementById('audits-table').innerHTML=`
+      <table><thead><tr><th>Hospital</th><th>Contact</th><th>Phone</th><th>Current System</th><th>Challenge</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${(data||[]).map(a=>`
+        <tr>
+          <td><strong>${a.hospital||'—'}</strong></td>
+          <td>${(a.first_name||'')+' '+(a.last_name||'')}<br/><span style="font-size:.75rem;color:var(--muted)">${a.role||''}</span></td>
+          <td>${a.phone||'—'}</td>
+          <td>${a.current_system||'—'}</td>
+          <td style="font-size:.78rem;max-width:160px">${a.challenge?.substring(0,80)||'—'}</td>
+          <td>${statusPill(a.status||'New')}</td>
+          <td style="font-size:.76rem;color:var(--muted)">${new Date(a.created_at).toLocaleDateString()}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading audit requests',true);}
+}
+
+// ── TICKETS ──
+async function loadTickets(){
+  try{
+    const data=await sbGetAll('tickets');
+    document.getElementById('tickets-count').textContent=(data||[]).filter(t=>t.status==='Open'||t.status==='In Progress').length;
+    document.getElementById('tickets-table').innerHTML=`
+      <table id="tickets-table-inner"><thead><tr><th>Ticket #</th><th>Issue</th><th>Hospital</th><th>Module</th><th>Priority</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>${(data||[]).map(t=>`
+        <tr>
+          <td style="font-family:var(--mono);font-size:.76rem">${t.ticket_number||'—'}</td>
+          <td><strong>${t.title}</strong></td>
+          <td>${t.hospital||'—'}</td>
+          <td style="font-size:.78rem">${t.module_affected||'—'}</td>
+          <td>${pill(t.priority, t.priority==='High'||t.priority==='Critical'?'red':t.priority==='Medium'?'yellow':'green')}</td>
+          <td>${statusPill(t.status)}</td>
+          <td style="font-size:.76rem;color:var(--muted)">${new Date(t.created_at).toLocaleDateString()}</td>
+          <td>
+            <select class="search-input" style="font-size:.75rem;padding:.3rem .5rem;" onchange="updateTicketStatus('${t.id}',this.value)">
+              <option ${t.status==='Open'?'selected':''}>Open</option>
+              <option ${t.status==='In Progress'?'selected':''}>In Progress</option>
+              <option ${t.status==='Resolved'?'selected':''}>Resolved</option>
+              <option ${t.status==='Closed'?'selected':''}>Closed</option>
+            </select>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){showToast('Error loading tickets',true);}
+}
+async function updateTicketStatus(id,status){await sbUpdate('tickets',id,{status});showToast('✅ Status updated!');}
+
+// ── SETTINGS ──
+async function loadSettings(){
+  try{
+    const data=await sbGetAll('settings');
+    const map={};(data||[]).forEach(s=>map[s.key]=s.value);
+    document.getElementById('s-phone1').value=map.phone1||'';
+    document.getElementById('s-phone2').value=map.phone2||'';
+    document.getElementById('s-whatsapp').value=map.whatsapp||'';
+    document.getElementById('s-email').value=map.email||'';
+    document.getElementById('s-hero').value=map.hero_headline||'';
+    document.getElementById('s-herotext').value=map.hero_subtext||'';
+  }catch(e){showToast('Error loading settings',true);}
+}
+async function saveSettings(){
+  const keys=['phone1','phone2','whatsapp','email','hero_headline','hero_subtext'];
+  const vals=[
+    document.getElementById('s-phone1').value,
+    document.getElementById('s-phone2').value,
+    document.getElementById('s-whatsapp').value,
+    document.getElementById('s-email').value,
+    document.getElementById('s-hero').value,
+    document.getElementById('s-herotext').value
+  ];
+  try{
+    for(let i=0;i<keys.length;i++){
+      await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.${keys[i]}`,{method:'PATCH',headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({value:vals[i],updated_at:new Date().toISOString()})});
+    }
+    showToast('✅ Settings saved!');
+  }catch(e){showToast('Error saving settings',true);}
+}
+
+// ── EXPORT CSV ──
+function exportCSV(table){
+  window.open(`${SUPABASE_URL}/rest/v1/${table}?apikey=${SUPABASE_KEY}`, '_blank');
+  showToast('📊 Opening data export...');
+}
+
+// ── PAGE ROUTER ──
+function loadPage(id){
+  const map={dashboard:loadDashboard,videos:loadVideos,downloads:loadDownloads,features:loadFeatures,testimonials:loadTestimonials,leads:loadLeads,proposals:loadProposals,audits:loadAudits,tickets:loadTickets,settings:loadSettings};
+  if(map[id]) map[id]();
+}
+
+async function loadAll(){
+  await loadDashboard();
+  showToast('✅ Data refreshed!');
+}
+
+// ── INIT ──
+loadDashboard();
+</script>
+</body>
+</html>
