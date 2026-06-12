@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ULTI-MED — Core, Specialist &amp; Prime Editions | Hospital Information System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#0B1120; --deep:#112240; --mid:#1E3A5F;
+  --accent:#00C896; --gold:#F4A922; --danger:#E5484D;
+  --surface:#F5F8FF; --card:#FFFFFF; --muted:#64748B;
+  --border:#E2E8F0; --text:#1E293B; --white:#FFFFFF;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--white);color:var(--text);overflow-x:hidden;line-height:1.6;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 4%;height:68px;background:rgba(11,17,32,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07);}
+.nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+.nav-logo-box{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#007A5C);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:white;font-family:var(--font-display);letter-spacing:-.5px;}
+.nav-brand-name{font-family:var(--font-display);font-size:1.3rem;color:var(--white);letter-spacing:-.5px;}
+.nav-brand-name span{color:var(--accent);}
+.nav-links{display:flex;gap:1.6rem;list-style:none;align-items:center;}
+.nav-links a{color:rgba(255,255,255,.72);text-decoration:none;font-size:.84rem;font-weight:500;letter-spacing:.02em;transition:color .2s;}
+.nav-links a:hover{color:var(--accent);}
+.nav-dropdown{position:relative;}
+.nav-dropdown-menu{display:none;position:absolute;top:calc(100% + 10px);left:0;background:var(--deep);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:.6rem;min-width:200px;z-index:300;}
+.nav-dropdown:hover .nav-dropdown-menu{display:block;}
+.nav-dropdown-menu a{display:block;padding:.55rem .9rem;border-radius:8px;color:rgba(255,255,255,.75);font-size:.83rem;transition:background .15s,color .15s;}
+.nav-dropdown-menu a:hover{background:rgba(0,200,150,.1);color:var(--accent);}
+.nav-cta{background:var(--accent)!important;color:var(--ink)!important;padding:.42rem 1.1rem;border-radius:6px;font-weight:700!important;}
+.nav-cta:hover{opacity:.88;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:.4rem;}
+.hamburger span{width:24px;height:2px;background:var(--white);border-radius:2px;display:block;}
+
+/* HERO */
+#hero{min-height:100vh;background:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:120px 5% 80px;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(0,200,150,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,150,.055) 1px,transparent 1px);background-size:60px 60px;}
+.hero-glow{position:absolute;top:-200px;right:-200px;width:650px;height:650px;background:radial-gradient(circle,rgba(0,200,150,.18) 0%,transparent 70%);z-index:0;}
+.hero-glow2{position:absolute;bottom:-150px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(244,169,34,.1) 0%,transparent 70%);z-index:0;}
+.hero-inner{position:relative;z-index:1;max-width:860px;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,200,150,.12);border:1px solid rgba(0,200,150,.3);color:var(--accent);padding:.35rem 1rem;border-radius:50px;font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2rem;}
+.hero-badge::before{content:"●";font-size:.45rem;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--font-display);font-size:clamp(2.4rem,5.5vw,4.4rem);font-weight:900;color:var(--white);line-height:1.1;letter-spacing:-.03em;margin-bottom:1.5rem;}
+h1 .accent-line{color:var(--accent);display:block;}
+h1 .gold-line{color:var(--gold);}
+.hero-sub{font-size:1.12rem;color:rgba(255,255,255,.62);max-width:600px;line-height:1.78;margin-bottom:2.5rem;}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3.5rem;}
+.btn-primary{background:var(--accent);color:var(--ink);padding:.88rem 1.9rem;border-radius:8px;font-weight:700;font-size:.93rem;text-decoration:none;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 0 30px rgba(0,200,150,.32);display:inline-block;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,200,150,.45);}
+.btn-secondary{background:transparent;color:var(--white);padding:.88rem 1.9rem;border-radius:8px;font-weight:600;font-size:.93rem;text-decoration:none;border:1px solid rgba(255,255,255,.22);cursor:pointer;transition:border-color .2s,background .2s;display:inline-block;}
+.btn-secondary:hover{border-color:var(--accent);background:rgba(0,200,150,.08);}
+.hero-stats{display:flex;gap:3rem;flex-wrap:wrap;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,.09);}
+.stat-num{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--white);line-height:1;}
+.stat-num span{color:var(--accent);}
+.stat-label{font-size:.78rem;color:rgba(255,255,255,.48);margin-top:.3rem;text-transform:uppercase;letter-spacing:.06em;}
+
+/* TRUST BAR */
+.trust-bar{background:var(--deep);border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:1.2rem 5%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2.5rem;}
+.trust-item{display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,.58);font-size:.81rem;font-weight:500;letter-spacing:.03em;}
+
+/* SECTIONS */
+section{padding:96px 5%;}
+.section-label{font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;}
+h2{font-family:var(--font-display);font-size:clamp(1.85rem,3.4vw,2.8rem);font-weight:700;color:var(--ink);line-height:1.2;letter-spacing:-.02em;}
+.section-desc{font-size:1.02rem;color:var(--muted);max-width:540px;line-height:1.76;margin-top:.7rem;}
+.section-head{margin-bottom:3.2rem;}
+
+/* PROBLEMS */
+#problems{background:var(--surface);}
+.problems-intro{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.8rem;flex-wrap:wrap;gap:1.5rem;}
+.loss-banner{background:linear-gradient(135deg,var(--danger) 0%,#B91C1C 100%);color:white;padding:1.2rem 1.8rem;border-radius:12px;font-size:.88rem;font-weight:600;max-width:300px;line-height:1.55;}
+.loss-banner strong{font-size:1.5rem;display:block;font-family:var(--font-display);}
+.problems-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem;}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.7rem;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.problem-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.09);}
+.problem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--danger);}
+.problem-icon{font-size:1.9rem;margin-bottom:1rem;}
+.problem-card h3{font-size:.97rem;font-weight:700;color:var(--ink);margin-bottom:.45rem;}
+.problem-card p{font-size:.855rem;color:var(--muted);line-height:1.65;}
+.problem-cost{display:inline-block;margin-top:.7rem;background:rgba(229,72,77,.1);color:var(--danger);font-size:.76rem;font-weight:700;padding:.28rem .72rem;border-radius:50px;}
+
+/* CALCULATOR */
+#calculator{background:var(--ink);}
+#calculator h2{color:var(--white);}
+#calculator .section-desc{color:rgba(255,255,255,.58);}
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:2.5rem;}
+.calc-inputs h3{color:rgba(255,255,255,.88);font-size:1rem;font-weight:600;margin-bottom:1.4rem;}
+.input-group{margin-bottom:1.3rem;}
+.input-group label{display:block;font-size:.79rem;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.45rem;}
+.input-group input,.input-group select{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:.72rem 1rem;color:var(--white);font-size:.92rem;font-family:var(--font-body);outline:none;transition:border-color .2s;}
+.input-group input:focus,.input-group select:focus{border-color:var(--accent);}
+.input-group select option{background:var(--deep);}
+.calc-result{display:flex;flex-direction:column;justify-content:center;}
+.result-card{background:linear-gradient(135deg,rgba(0,200,150,.14) 0%,rgba(0,200,150,.04) 100%);border:1px solid rgba(0,200,150,.28);border-radius:16px;padding:2rem;}
+.result-label{font-size:.78rem;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem;}
+.result-big{font-family:var(--font-display);font-size:2.9rem;font-weight:700;color:var(--danger);line-height:1;margin-bottom:.22rem;}
+.result-sub{font-size:.83rem;color:rgba(255,255,255,.45);margin-bottom:1.4rem;}
+.result-savings{font-family:var(--font-display);font-size:2.1rem;font-weight:700;color:var(--accent);line-height:1;margin-bottom:.22rem;}
+.result-breakdown{margin-top:1.4rem;border-top:1px solid rgba(255,255,255,.09);padding-top:1.1rem;}
+.breakdown-row{display:flex;justify-content:space-between;font-size:.81rem;padding:.33rem 0;color:rgba(255,255,255,.55);border-bottom:1px solid rgba(255,255,255,.05);}
+.breakdown-row span:last-child{color:var(--danger);font-weight:600;}
+
+/* FEATURES */
+#features{background:var(--white);}
+.features-tabs{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:2.4rem;}
+.tab-btn{padding:.58rem 1.15rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.83rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-body);}
+.tab-btn.active,.tab-btn:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.4rem;}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.9rem;transition:transform .2s,box-shadow .2s,border-color .2s;}
+.feature-card:hover{transform:translateY(-5px);box-shadow:0 16px 50px rgba(0,0,0,.08);border-color:var(--accent);}
+.feat-icon-wrap{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;margin-bottom:1.1rem;}
+.feature-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.45rem;}
+.feature-card p{font-size:.86rem;color:var(--muted);line-height:1.65;}
+.feat-tag{display:inline-block;margin-top:.7rem;font-size:.7rem;font-weight:700;padding:.24rem .62rem;border-radius:50px;letter-spacing:.04em;text-transform:uppercase;}
+.tag-safety{background:rgba(229,72,77,.1);color:var(--danger);}
+.tag-revenue{background:rgba(0,200,150,.1);color:#008A67;}
+.tag-compliance{background:rgba(244,169,34,.12);color:#B07A00;}
+.tag-ai{background:rgba(139,92,246,.12);color:#6D28D9;}
+.tag-data{background:rgba(59,130,246,.12);color:#1D4ED8;}
+
+/* SEGMENTS */
+#segments{background:var(--deep);}
+#segments h2{color:var(--white);}
+#segments .section-desc{color:rgba(255,255,255,.58);}
+.segments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.4rem;}
+.segment-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:1.9rem;transition:background .2s,border-color .2s;}
+.segment-card:hover{background:rgba(0,200,150,.08);border-color:rgba(0,200,150,.28);}
+.seg-icon{font-size:2.4rem;margin-bottom:.9rem;}
+.segment-card h3{color:var(--white);font-size:1rem;font-weight:700;margin-bottom:.7rem;}
+.segment-card ul{list-style:none;}
+.segment-card ul li{font-size:.84rem;color:rgba(255,255,255,.58);padding:.32rem 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:flex-start;gap:.45rem;}
+.segment-card ul li::before{content:"→";color:var(--accent);flex-shrink:0;margin-top:1px;}
+
+/* VIDEO LIBRARY */
+#videos{background:var(--surface);}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.6rem;}
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.video-card:hover{transform:translateY(-4px);box-shadow:0 14px 45px rgba(0,0,0,.1);}
+.video-thumb{position:relative;height:180px;background:linear-gradient(135deg,var(--deep),var(--mid));display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.video-thumb img{width:100%;height:100%;object-fit:cover;opacity:.7;}
+.video-play{width:58px;height:58px;background:rgba(0,200,150,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute;font-size:1.3rem;transition:transform .2s,background .2s;}
+.video-card:hover .video-play{transform:scale(1.1);background:var(--accent);}
+.video-badge{position:absolute;top:.75rem;left:.75rem;background:var(--gold);color:var(--ink);font-size:.7rem;font-weight:700;padding:.22rem .65rem;border-radius:50px;}
+.video-info{padding:1.3rem;}
+.video-info h3{font-size:.97rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.video-info p{font-size:.83rem;color:var(--muted);line-height:1.6;}
+.video-meta{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;}
+.video-duration{font-size:.76rem;color:var(--muted);font-family:var(--font-mono);}
+.video-cat{font-size:.72rem;font-weight:700;padding:.22rem .6rem;border-radius:50px;background:rgba(0,200,150,.1);color:#008A67;}
+
+/* DOWNLOAD CENTER */
+#downloads{background:var(--white);}
+.downloads-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;}
+.download-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.6rem;display:flex;flex-direction:column;gap:.8rem;transition:border-color .2s,box-shadow .2s;}
+.download-card:hover{border-color:var(--accent);box-shadow:0 8px 30px rgba(0,0,0,.07);}
+.dl-icon-row{display:flex;align-items:center;gap:.9rem;}
+.dl-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.dl-icon.pdf{background:rgba(229,72,77,.1);}
+.dl-icon.ppt{background:rgba(244,169,34,.12);}
+.dl-icon.doc{background:rgba(59,130,246,.12);}
+.dl-icon.xls{background:rgba(0,200,150,.1);}
+.dl-title{font-size:.96rem;font-weight:700;color:var(--ink);}
+.dl-desc{font-size:.84rem;color:var(--muted);line-height:1.62;}
+.dl-meta{display:flex;justify-content:space-between;align-items:center;}
+.dl-size{font-size:.76rem;color:var(--muted);font-family:var(--font-mono);}
+.btn-dl{background:var(--ink);color:var(--white);padding:.45rem 1rem;border-radius:7px;font-size:.8rem;font-weight:600;text-decoration:none;transition:background .2s;}
+.btn-dl:hover{background:var(--mid);}
+
+/* REQUEST PROPOSAL */
+#proposal{background:var(--ink);}
+#proposal h2{color:var(--white);}
+#proposal .section-desc{color:rgba(255,255,255,.58);}
+.proposal-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:3.5rem;align-items:start;}
+.proposal-left{}
+.proposal-steps{margin-top:2rem;}
+.p-step{display:flex;gap:1.1rem;padding:1.1rem 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.p-step-num{width:36px;height:36px;flex-shrink:0;border-radius:50%;background:rgba(0,200,150,.15);border:1px solid rgba(0,200,150,.3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;font-family:var(--font-mono);}
+.p-step-text strong{display:block;font-size:.94rem;color:var(--white);margin-bottom:.2rem;}
+.p-step-text p{font-size:.83rem;color:rgba(255,255,255,.52);}
+.proposal-form{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.4rem;}
+.proposal-form h3{color:var(--white);font-size:1.15rem;margin-bottom:.45rem;}
+.proposal-form>p{color:rgba(255,255,255,.52);font-size:.87rem;margin-bottom:1.7rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{margin-bottom:1.05rem;}
+.form-group label{display:block;font-size:.79rem;font-weight:600;margin-bottom:.4rem;}
+.dark-label{color:rgba(255,255,255,.55);}
+.light-label{color:var(--text);}
+.form-group input,.form-group select,.form-group textarea{width:100%;border-radius:8px;padding:.7rem 1rem;font-size:.89rem;font-family:var(--font-body);outline:none;transition:border-color .2s;}
+.dark-input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--white);}
+.dark-input::placeholder{color:rgba(255,255,255,.28);}
+.dark-input:focus{border-color:var(--accent);}
+.dark-input option{background:var(--deep);color:white;}
+.light-input{background:var(--surface);border:1px solid var(--border);color:var(--text);}
+.light-input:focus{border-color:var(--accent);}
+.form-group textarea{height:88px;resize:vertical;}
+.form-note{font-size:.77rem;color:rgba(255,255,255,.38);margin-top:.9rem;}
+.form-note a{color:var(--accent);text-decoration:none;}
+
+/* AUDIT */
+#audit{background:var(--surface);}
+.audit-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+.audit-checklist{margin:1.8rem 0;}
+.audit-item{display:flex;align-items:flex-start;gap:.9rem;padding:.95rem 0;border-bottom:1px solid var(--border);}
+.audit-num{width:32px;height:32px;flex-shrink:0;background:var(--ink);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;font-family:var(--font-mono);}
+.audit-item-text strong{display:block;font-size:.94rem;color:var(--ink);margin-bottom:.18rem;}
+.audit-item-text p{font-size:.83rem;color:var(--muted);}
+.audit-form{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.4rem;box-shadow:0 8px 40px rgba(0,0,0,.07);}
+.audit-form h3{font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.45rem;}
+.audit-form>p{font-size:.87rem;color:var(--muted);margin-bottom:1.65rem;}
+
+/* SOCIAL PROOF */
+#social-proof{background:var(--white);}
+.proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem;margin-bottom:2.8rem;}
+.proof-card{border:1px solid var(--border);border-radius:16px;padding:1.9rem;position:relative;}
+.proof-card.pilot-cta{background:linear-gradient(135deg,var(--ink) 0%,var(--mid) 100%);border-color:transparent;}
+.quote-mark{font-size:2.8rem;color:var(--accent);line-height:.75;margin-bottom:.7rem;font-family:Georgia,serif;}
+.proof-card blockquote{font-size:.88rem;color:var(--muted);line-height:1.72;font-style:italic;margin-bottom:1.2rem;}
+.proof-author{display:flex;align-items:center;gap:.7rem;}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--mid));display:flex;align-items:center;justify-content:center;font-size:.83rem;font-weight:700;color:white;}
+.author-name{font-size:.87rem;font-weight:700;color:var(--ink);}
+.author-role{font-size:.77rem;color:var(--muted);}
+.pilot-cta h3{color:var(--white);font-size:1.15rem;font-weight:700;margin-bottom:.7rem;}
+.pilot-cta p{color:rgba(255,255,255,.62);font-size:.86rem;line-height:1.65;margin-bottom:1.4rem;}
+.pilot-perks{list-style:none;margin-bottom:1.65rem;}
+.pilot-perks li{color:rgba(255,255,255,.78);font-size:.82rem;padding:.28rem 0;display:flex;gap:.45rem;}
+.pilot-perks li::before{content:"✓";color:var(--accent);font-weight:700;}
+
+/* CONTACT */
+#contact{background:var(--ink);padding:96px 5%;}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.contact-left h2{color:var(--white);margin-bottom:.9rem;}
+.contact-left p{color:rgba(255,255,255,.58);font-size:.98rem;line-height:1.78;margin-bottom:1.9rem;}
+.contact-methods{display:flex;flex-direction:column;gap:.9rem;}
+.contact-method{display:flex;align-items:center;gap:.95rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:.95rem 1.2rem;text-decoration:none;transition:background .2s,border-color .2s;}
+.contact-method:hover{background:rgba(0,200,150,.09);border-color:rgba(0,200,150,.28);}
+.method-icon{font-size:1.35rem;}
+.method-label{font-size:.76rem;color:rgba(255,255,255,.42);}
+.method-value{font-size:.93rem;color:var(--white);font-weight:600;}
+.contact-form{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.4rem;}
+.contact-form h3{color:var(--white);margin-bottom:.45rem;font-size:1.15rem;}
+.contact-form>p{color:rgba(255,255,255,.52);font-size:.87rem;margin-bottom:1.65rem;}
+
+/* FOOTER */
+footer{background:#060C18;padding:3rem 5%;border-top:1px solid rgba(255,255,255,.07);}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:2rem;margin-bottom:2.5rem;}
+.footer-brand-name{font-family:var(--font-display);font-size:1.4rem;color:var(--white);margin-bottom:.5rem;}
+.footer-brand-name span{color:var(--accent);}
+.footer-brand-desc{font-size:.82rem;color:rgba(255,255,255,.38);max-width:240px;line-height:1.65;}
+.footer-col h4{font-size:.82rem;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;margin-bottom:1rem;}
+.footer-col a{display:block;font-size:.83rem;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:.5rem;transition:color .2s;}
+.footer-col a:hover{color:var(--accent);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:.79rem;color:rgba(255,255,255,.3);}
+
+/* PORTAL NAV LINKS */
+.portal-links{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2rem;}
+.portal-link-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s;background:rgba(255,255,255,.04);}
+.portal-link-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,200,150,.08);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:var(--ink);padding:.9rem 1.4rem;border-radius:12px;font-weight:700;font-size:.88rem;z-index:999;transform:translateY(120%);transition:transform .3s;box-shadow:0 8px 30px rgba(0,200,150,.38);}
+.toast.show{transform:translateY(0);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:2rem;left:2rem;z-index:200;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.55rem;box-shadow:0 6px 24px rgba(37,211,102,.38);text-decoration:none;transition:transform .2s;}
+.wa-float:hover{transform:scale(1.1);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--deep);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:2.5rem;max-width:520px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.08);border:none;color:var(--white);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:rgba(255,255,255,.15);}
+.modal-box h3{color:var(--white);font-size:1.2rem;margin-bottom:.4rem;}
+.modal-box>p{color:rgba(255,255,255,.52);font-size:.87rem;margin-bottom:1.6rem;}
+.modal-video-wrap{background:rgba(0,0,0,.4);border-radius:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;font-size:3rem;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links{display:none;}.hamburger{display:flex;}
+  .calc-wrap,.audit-wrap,.contact-wrap,.proposal-wrap{grid-template-columns:1fr;gap:2rem;}
+  .form-row{grid-template-columns:1fr;}
+  .hero-stats{gap:1.5rem;}
+}
+@media(max-width:600px){section{padding:68px 5%;}.trust-bar{gap:1.1rem;}.problems-intro{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<a class="wa-float" href="https://wa.me/2348037766592?text=Hello%2C%20I%20am%20interested%20in%20ULTI-MED%20HIS" target="_blank" title="Chat on WhatsApp">💬</a>
+<div class="toast" id="toast"></div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-box" style="max-width:640px;">
+    <button class="modal-close" onclick="closeModal('videoModal')">✕</button>
+    <h3 id="modal-video-title">Video Title</h3>
+    <p id="modal-video-desc">Video description</p>
+    <div class="modal-video-wrap">🎬<br/><span style="font-size:.9rem;color:rgba(255,255,255,.5);margin-top:.5rem;display:block;">Video player coming soon</span></div>
+    <a href="#contact" class="btn-primary" style="display:block;text-align:center;" onclick="closeModal('videoModal')">Book a Live Demo Instead →</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="data:image/jpeg;base64,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" alt="ULTI-MED" style="height:34px;width:auto;display:block;">
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#problems">Why ULTI-MED</a></li>
+    <li><a href="#editions">Editions</a></li>
+    <li><a href="#features">Features</a></li>
+    <li class="nav-dropdown">
+      <a href="#videos">Resources ▾</a>
+      <div class="nav-dropdown-menu">
+        <a href="#videos">📹 Video Library</a>
+        <a href="#downloads">📥 Download Centre</a>
+        <a href="#proposal">📋 Request Proposal</a>
+        <a href="#audit">🔍 Free Audit</a>
+      </div>
+    </li>
+    <li class="nav-dropdown">
+      <a href="portal.html">Portal ▾</a>
+      <div class="nav-dropdown-menu">
+        <a href="portal.html#crm">🗂️ CRM Dashboard</a>
+        <a href="portal.html#proposals">📊 Proposal Tracking</a>
+        <a href="portal.html#subscriptions">💳 Subscriptions</a>
+        <a href="portal.html#support">🎫 Support Tickets</a>
+      </div>
+    </li>
+    <li><a href="#segments">Who It's For</a></li>
+    <li><a href="admin/index.html" style="color:rgba(255,255,255,.45);font-size:.78rem;">Admin</a></li>
+    <li><a href="#contact" class="nav-cta">Book Demo</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner reveal">
+    <div class="hero-badge">ULTI-MED — Core · Specialist · Prime Editions</div>
+    <h1>
+      Your Hospital Is Losing<br/>
+      Money <span class="gold-line">Every Single Day.</span>
+      <span class="accent-line">ULTI-MED Has Fixed That.</span>
+    </h1>
+    <p class="hero-sub">
+      ULTI-MED is the only HIS in Nigeria with a built-in Service Gate, ICD-11 claims engine, drug interaction alerts, AI speech recognition, complete NHIS automation, and HMO policy management — purpose-engineered to protect your revenue, your patients, and your compliance standing.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Book a Free Demo →</a>
+      <a href="#calculator" class="btn-secondary">Calculate Your Revenue Loss</a>
+    </div>
+    <div class="portal-links">
+      <a href="portal.html" class="portal-link-btn">🗂️ Client Portal</a>
+      <a href="#proposal" class="portal-link-btn">📋 Request Proposal</a>
+      <a href="#videos" class="portal-link-btn">📹 Video Library</a>
+      <a href="#downloads" class="portal-link-btn">📥 Downloads</a>
+    </div>
+    <div class="hero-stats" style="margin-top:2.5rem;">
+      <div class="stat-item">
+        <div class="stat-num">₦4.2<span>M+</span></div>
+        <div class="stat-label">Avg. Annual Revenue Lost Per Hospital</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">68<span>%</span></div>
+        <div class="stat-label">NHIS Claims Rejected Due to Coding Errors</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">34<span>%</span></div>
+        <div class="stat-label">Services Rendered Without Payment Captured</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">🏥 NHIS Compliant</div>
+  <div class="trust-item">📋 ICD-11 Certified</div>
+  <div class="trust-item">🔒 NDPR &amp; HIPAA Compliant</div>
+  <div class="trust-item">🤝 HMO Policy Automation</div>
+  <div class="trust-item">🗣️ AI Speech Recognition</div>
+  <div class="trust-item">⚡ Drug Interaction Alerts</div>
+</div>
+
+<!-- PROBLEMS -->
+<section id="problems">
+  <div class="problems-intro reveal">
+    <div>
+      <div class="section-label">The Real Cost of the Wrong System</div>
+      <h2>5 Ways Your Current HIS<br/>Is Bleeding Your Hospital Dry</h2>
+    </div>
+    <div class="loss-banner"><strong>₦4.2M+</strong>Average annual financial loss per 100-bed Nigerian private hospital using legacy systems</div>
+  </div>
+  <div class="problems-grid">
+    <div class="problem-card reveal"><div class="problem-icon">💊</div><h3>Dangerous Drug Interactions Going Undetected</h3><p>Without automated interaction checks, your clinical staff are prescribing blindly. One medical error can cost far more than your annual IT budget — in litigation, reputation, and lives.</p><span class="problem-cost">Risk: Litigation + Loss of Licence</span></div>
+    <div class="problem-card reveal"><div class="problem-icon">🚪</div><h3>Services Rendered Without Payment</h3><p>Without a Service Gate, your hospital delivers procedures, labs, and medications that never get billed. Staff bypass the system, patients walk out, revenue disappears.</p><span class="problem-cost">Avg. Loss: ₦1.1M/year per 100 beds</span></div>
+    <div class="problem-card reveal"><div class="problem-icon">📄</div><h3>NHIS Claims Rejected at Alarming Rates</h3><p>Coding errors, wrong ICD versions, missing documentation — HMOs reject claims on technicalities. Most hospitals lose 20–40% of their capitation value through preventable errors.</p><span class="problem-cost">Avg. Loss: ₦800K/year in rejected claims</span></div>
+    <div class="problem-card reveal"><div class="problem-icon">📊</div><h3>Incomplete Data Killing Research & Audits</h3><p>When staff skip fields, enter inconsistent data, or use free-text for structured information, your records become legally indefensible and statistically useless.</p><span class="problem-cost">Risk: Failed Accreditation Audits</span></div>
+    <div class="problem-card reveal"><div class="problem-icon">🤝</div><h3>HMO & Retainer Agreement Confusion</h3><p>Private HMOs, NHIS, State Health Schemes, Retainerships — each with different rules. Without a policy engine, your staff apply the wrong tariff daily, creating disputes and write-offs.</p><span class="problem-cost">Avg. Loss: ₦600K/year in write-offs</span></div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="section-head reveal">
+    <div class="section-label" style="color:var(--accent)">Revenue Leak Calculator</div>
+    <h2>Find Out Exactly How Much<br/>Your Hospital Is Losing</h2>
+    <p class="section-desc" style="color:rgba(255,255,255,.58)">Enter your hospital profile. We'll estimate your annual revenue leak instantly.</p>
+  </div>
+  <div class="calc-wrap reveal">
+    <div class="calc-inputs">
+      <h3>Your Hospital Profile</h3>
+      <div class="input-group"><label>Number of Beds</label><input type="number" id="beds" value="80" min="10" oninput="calcLoss()"/></div>
+      <div class="input-group"><label>Daily Patient Visits</label><input type="number" id="patients" value="120" min="10" oninput="calcLoss()"/></div>
+      <div class="input-group"><label>Average Consultation Fee (₦)</label><input type="number" id="fee" value="3500" min="500" oninput="calcLoss()"/></div>
+      <div class="input-group"><label>% of Patients on HMO / NHIS</label><input type="number" id="hmo" value="40" min="0" max="100" oninput="calcLoss()"/></div>
+      <div class="input-group"><label>Hospital Type</label>
+        <select id="htype" onchange="calcLoss()">
+          <option value="private">Private Hospital</option>
+          <option value="tertiary">Tertiary / Teaching Hospital</option>
+          <option value="faith">Faith-Based / Mission Hospital</option>
+          <option value="specialist">Specialist Clinic</option>
+        </select>
+      </div>
+    </div>
+    <div class="calc-result">
+      <div class="result-card">
+        <div class="result-label">Estimated Annual Revenue Loss</div>
+        <div class="result-big" id="result-loss">₦3,204,000</div>
+        <div class="result-sub">Due to unbilled services, rejected claims & system gaps</div>
+        <div class="result-label" style="margin-top:1.2rem">Recoverable With ULTI-MED</div>
+        <div class="result-savings" id="result-savings">₦2,563,200</div>
+        <div class="result-sub">(80% recovery rate in Year 1)</div>
+        <div class="result-breakdown">
+          <div class="breakdown-row"><span>Unbilled Services</span><span id="b1">-₦1,100,000</span></div>
+          <div class="breakdown-row"><span>Rejected NHIS Claims</span><span id="b2">-₦800,000</span></div>
+          <div class="breakdown-row"><span>HMO Tariff Disputes</span><span id="b3">-₦600,000</span></div>
+          <div class="breakdown-row"><span>Data Entry Errors</span><span id="b4">-₦404,000</span></div>
+          <div class="breakdown-row"><span>Drug Error Liability</span><span id="b5">-₦300,000</span></div>
+        </div>
+        <a href="#proposal" class="btn-primary" style="display:block;text-align:center;margin-top:1.2rem">Get My Recovery Proposal →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDITIONS -->
+<section id="editions" style="background:var(--ink);padding:96px 5%;">
+  <div class="section-head reveal">
+    <div class="section-label" style="color:var(--accent);">Three Editions. One Platform.</div>
+    <h2 style="color:var(--white);">Choose the ULTI-MED Edition<br/>Built for Your Facility</h2>
+    <p class="section-desc" style="color:rgba(255,255,255,.58);">Every edition runs on the same powerful core. The difference is in the depth of modules activated — and the size and complexity of the facility they're designed for.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.6rem;">
+
+    <!-- CORE EDITION -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:2.2rem;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(0,200,150,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,200,150,.12);border:1px solid rgba(0,200,150,.25);color:var(--accent);padding:.3rem .9rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.07em;margin-bottom:1.3rem;">CORE EDITION</div>
+      <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--white);margin-bottom:.5rem;">Essentials for<br/>Every Clinic</div>
+      <div style="font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:1.5rem;">Designed for general hospitals, faith-based facilities, and clinics up to 100 beds that need solid billing, NHIS basics, and data integrity from day one.</div>
+      <ul style="list-style:none;margin-bottom:1.8rem;">
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> OPD &amp; IPD Billing</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Basic NHIS Module</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Drug Interaction Alerts</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Service Gate</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Data Validation Engine</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Patient Records &amp; History</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;display:flex;gap:.5rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Standard Reports</li>
+      </ul>
+      <a href="#proposal" class="btn-secondary" style="display:block;text-align:center;">Get Core Edition Proposal →</a>
+    </div>
+
+    <!-- SPECIALIST EDITION -->
+    <div style="background:rgba(139,92,246,.08);border:2px solid rgba(139,92,246,.35);border-radius:18px;padding:2.2rem;position:relative;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(139,92,246,.7)'" onmouseout="this.style.borderColor='rgba(139,92,246,.35)'">
+      <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#8B5CF6;color:white;font-size:.72rem;font-weight:700;padding:.3rem 1rem;border-radius:50px;letter-spacing:.06em;white-space:nowrap;">MOST POPULAR</div>
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.4);color:#A78BFA;padding:.3rem .9rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.07em;margin-bottom:1.3rem;">SPECIALIST EDITION</div>
+      <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--white);margin-bottom:.5rem;">Built for Private<br/>Hospitals &amp; Clinics</div>
+      <div style="font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:1.5rem;">Designed for private hospitals, specialist centres, and multi-department facilities needing full HMO automation, ICD-11 coding, and retainerships.</div>
+      <ul style="list-style:none;margin-bottom:1.8rem;">
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> Everything in Core Edition</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> Full ICD-11 Coding Engine</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> HMO Policy Engine (Multi-HMO)</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> Retainerships &amp; Corporate Billing</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> Full Private HMO Claims Automation</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> Vital Alerts &amp; Escalation</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;display:flex;gap:.5rem;"><span style="color:#A78BFA;font-weight:700;">✓</span> State Health Scheme Integration</li>
+      </ul>
+      <a href="#proposal" class="btn-primary" style="display:block;text-align:center;background:#8B5CF6;box-shadow:0 0 28px rgba(139,92,246,.35);">Get Specialist Proposal →</a>
+    </div>
+
+    <!-- PRIME EDITION -->
+    <div style="background:linear-gradient(160deg,rgba(244,169,34,.1) 0%,rgba(244,169,34,.03) 100%);border:2px solid rgba(244,169,34,.4);border-radius:18px;padding:2.2rem;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(244,169,34,.75)'" onmouseout="this.style.borderColor='rgba(244,169,34,.4)'">
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(244,169,34,.15);border:1px solid rgba(244,169,34,.4);color:var(--gold);padding:.3rem .9rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.07em;margin-bottom:1.3rem;">PRIME EDITION — TERTIARY</div>
+      <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--white);margin-bottom:.5rem;">For Teaching &amp;<br/>Tertiary Hospitals</div>
+      <div style="font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:1.5rem;">The complete platform for government teaching hospitals, federal/state tertiary facilities, and large hospital groups needing multi-campus, AI-driven, and research-grade capability.</div>
+      <ul style="list-style:none;margin-bottom:1.8rem;">
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Everything in Specialist Edition</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> AI Speech Recognition</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Multi-Campus / Multi-Ward Management</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Research-Grade Statistical Engine</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Government NHIS Capitation Full Suite</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Resident &amp; Consultant Tracking</li>
+        <li style="color:rgba(255,255,255,.75);font-size:.84rem;padding:.35rem 0;display:flex;gap:.5rem;"><span style="color:var(--gold);font-weight:700;">✓</span> Dedicated Account Manager &amp; 24/7 SLA</li>
+      </ul>
+      <a href="#proposal" class="btn-primary" style="display:block;text-align:center;background:var(--gold);color:var(--ink);box-shadow:0 0 28px rgba(244,169,34,.35);">Get Prime Edition Proposal →</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:2.5rem;">
+    <p style="color:rgba(255,255,255,.45);font-size:.88rem;">Not sure which edition fits? <a href="#contact" style="color:var(--accent);text-decoration:none;font-weight:600;">Book a free 15-minute consultation →</a></p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-head reveal">
+    <div class="section-label">Platform Capabilities</div>
+    <h2>Every Feature Solves<br/>a Real Hospital Problem</h2>
+    <p class="section-desc">Not a feature list — a problem-solution map. Each module was built because Nigerian hospitals were losing money, risking lives, or failing audits without it.</p>
+  </div>
+  <div class="features-tabs">
+    <button class="tab-btn active" onclick="filterFeats('all',this)">All Features</button>
+    <button class="tab-btn" onclick="filterFeats('safety',this)">Patient Safety</button>
+    <button class="tab-btn" onclick="filterFeats('revenue',this)">Revenue</button>
+    <button class="tab-btn" onclick="filterFeats('compliance',this)">Compliance</button>
+    <button class="tab-btn" onclick="filterFeats('ai',this)">AI & Technology</button>
+    <button class="tab-btn" onclick="filterFeats('data',this)">Data & Records</button>
+  </div>
+  <div class="features-grid" id="features-grid"></div>
+</section>
+
+<!-- SEGMENTS -->
+<section id="segments">
+  <div class="section-head reveal">
+    <div class="section-label">Who This Is Built For</div>
+    <h2 style="color:var(--white)">Built for Every Nigerian<br/>Healthcare Facility</h2>
+    <p class="section-desc">Whether you're a 500-bed tertiary hospital or a growing 40-bed private clinic, ULTI-MED scales precisely to your operations.</p>
+  </div>
+  <div class="segments-grid">
+    <div class="segment-card reveal"><div class="seg-icon">🏛️</div><h3>Tertiary & Teaching Hospitals</h3><ul><li>Full departmental billing across 20+ specialties</li><li>Research data integrity with ICD-11 coding</li><li>Resident & consultant activity tracking</li><li>Multi-campus / ward management</li><li>Government NHIS capitation compliance</li></ul></div>
+    <div class="segment-card reveal"><div class="seg-icon">🏥</div><h3>Private Hospitals (50–300 Beds) <span style="font-size:.72rem;background:rgba(139,92,246,.2);color:#8B5CF6;padding:.15rem .55rem;border-radius:50px;font-weight:700;vertical-align:middle;">SPECIALIST</span></h3><ul><li>Service Gate to protect revenue at every point</li><li>Private HMO policy engine</li><li>Retainerships & corporate client billing</li><li>Drug interaction automation</li><li>Real-time bed management dashboard</li></ul></div>
+    <div class="segment-card reveal"><div class="seg-icon">✝️</div><h3>Faith-Based & Mission Hospitals</h3><ul><li>Charity & subsidized patient tracking</li><li>Donor & grant fund allocation</li><li>State Health Scheme integration</li><li>Community health record management</li><li>Outreach & immunisation program tracking</li></ul></div>
+    <div class="segment-card reveal"><div class="seg-icon">🔬</div><h3>Specialist Clinics & Diagnostics</h3><ul><li>Single-specialty billing & scheduling</li><li>Lab result integration & HL7 messaging</li><li>Referral management & tracking</li><li>HMO pre-authorization workflows</li><li>Patient appointment reminders</li></ul></div>
+    <div class="segment-card reveal"><div class="seg-icon">📟</div><h3>Legacy System Migrators <span style="font-size:.72rem;background:rgba(0,200,150,.15);color:#00C896;padding:.15rem .55rem;border-radius:50px;font-weight:700;vertical-align:middle;">ALL EDITIONS</span></h3><ul><li>Structured migration with zero data loss</li><li>Free gap-analysis audit before switching</li><li>Parallel run period for staff comfort</li><li>Staff training included in onboarding</li><li>All old data fully imported & mapped</li></ul></div>
+  </div>
+</section>
+
+<!-- VIDEO LIBRARY -->
+<section id="videos">
+  <div class="section-head reveal">
+    <div class="section-label">Video Library</div>
+    <h2>See ULTI-MED in Action<br/>Before You Book a Demo</h2>
+    <p class="section-desc">Short, focused video walkthroughs of every major module. No sales pitch — just the system doing its job.</p>
+  </div>
+  <div class="video-grid" id="video-grid"></div>
+</section>
+
+<!-- DOWNLOAD CENTER -->
+<section id="downloads">
+  <div class="section-head reveal">
+    <div class="section-label">Download Centre</div>
+    <h2>Resources to Share With<br/>Your Leadership Team</h2>
+    <p class="section-desc">Brochures, compliance guides, ROI calculators, and implementation roadmaps — everything you need to build an internal business case.</p>
+  </div>
+  <div class="downloads-grid" id="downloads-grid"></div>
+</section>
+
+<!-- REQUEST PROPOSAL -->
+<section id="proposal">
+  <div class="proposal-wrap">
+    <div class="proposal-left reveal">
+      <div class="section-label" style="color:var(--accent)">Request a Proposal</div>
+      <h2>Get a Tailored Proposal<br/>for Your Facility</h2>
+      <p class="section-desc">We don't send generic pricing sheets. Every proposal is customised to your hospital's size, specialties, HMO mix, and technical infrastructure.</p>
+      <div class="proposal-steps">
+        <div class="p-step"><div class="p-step-num">01</div><div class="p-step-text"><strong>Submit Your Profile</strong><p>Tell us about your facility — beds, specialties, current system, and key challenges.</p></div></div>
+        <div class="p-step"><div class="p-step-num">02</div><div class="p-step-text"><strong>Scoping Call (30 min)</strong><p>Our team schedules a brief call to clarify requirements and answer technical questions.</p></div></div>
+        <div class="p-step"><div class="p-step-num">03</div><div class="p-step-text"><strong>Proposal Delivered in 48hrs</strong><p>You receive a detailed, itemised proposal with implementation timeline, pricing, and SLA terms.</p></div></div>
+        <div class="p-step"><div class="p-step-num">04</div><div class="p-step-text"><strong>Track Your Proposal Online</strong><p>Log into the Client Portal to view your proposal status, approve, request changes, or sign off.</p></div></div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <a href="portal.html#proposals" class="btn-secondary" style="display:inline-flex;align-items:center;gap:.5rem;">📊 Track Existing Proposals</a>
+      </div>
+    </div>
+    <div class="proposal-form reveal">
+      <h3>Submit Proposal Request</h3>
+      <p>All fields help us build an accurate proposal. Takes under 3 minutes.</p>
+      <div class="form-row">
+        <div class="form-group"><label class="dark-label">First Name</label><input class="dark-input" type="text" id="pf-fname" placeholder="Dr. Emeka"/></div>
+        <div class="form-group"><label class="dark-label">Last Name</label><input class="dark-input" type="text" id="pf-lname" placeholder="Okafor"/></div>
+      </div>
+      <div class="form-group"><label class="dark-label">Hospital / Facility Name</label><input class="dark-input" type="text" id="pf-hospital" placeholder="St. Mary's Hospital, Abuja"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="dark-label">Your Role</label>
+          <select class="dark-input" id="pf-role"><option>Medical Director</option><option>Hospital Administrator</option><option>COO / CFO</option><option>IT Manager</option><option>NHIS Desk Officer</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label class="dark-label">No. of Beds</label>
+          <select class="dark-input" id="pf-beds"><option>Under 30</option><option>30–100</option><option>100–300</option><option>300–500</option><option>500+</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="dark-label">Phone</label><input class="dark-input" type="tel" id="pf-phone" placeholder="+234 800 000 0000"/></div>
+        <div class="form-group"><label class="dark-label">Email</label><input class="dark-input" type="email" id="pf-email" placeholder="you@hospital.com"/></div>
+      </div>
+      <div class="form-group"><label class="dark-label">Current System in Use</label>
+        <select class="dark-input" id="pf-system"><option>No system (paper-based)</option><option>eTRACS</option><option>Axxess HIS</option><option>Health-e Systems</option><option>Custom/In-house Built</option><option>Other Legacy System</option></select>
+      </div>
+      <div class="form-group"><label class="dark-label">Key Priorities for This Proposal</label>
+        <textarea class="dark-input" id="pf-notes" placeholder="e.g. NHIS module, HMO billing, drug interaction system, speech recognition, full migration from legacy..."></textarea>
+      </div>
+
+      <!-- QUESTIONNAIRE DIVIDER -->
+      <div style="border-top:1px solid rgba(255,255,255,.12);margin:1.4rem 0;padding-top:1.4rem;">
+        <p style="font-size:.82rem;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.1rem;">📋 Infrastructure &amp; Requirements</p>
+
+        <div class="form-group">
+          <label class="dark-label">Number of Consulting Rooms</label>
+          <input class="dark-input" type="number" id="pf-consult-rooms" placeholder="e.g. 8" min="1"/>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">LAN / Local Area Connectivity Needed?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="lan" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="lan" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">Wireless (Wi-Fi) Connectivity Needed?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="wifi" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="wifi" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">Supply Computers / Hardware?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="computers" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="computers" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">Existing Power Backup (UPS/Generator)?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="power" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="power" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">Radiology Images Online Integration?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="radiology" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="radiology" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="dark-label" style="margin-bottom:.6rem;display:block;">Centralised Radiology Reporting Station?</label>
+            <div style="display:flex;gap:.75rem;">
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="radio-station" value="yes" style="accent-color:var(--accent);"> Yes</label>
+              <label style="display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.84rem;cursor:pointer;"><input type="radio" name="radio-station" value="no" style="accent-color:var(--accent);"> No</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="dark-label">No. of Radiology Modalities (X-Ray, CT, MRI, Ultrasound, etc.)</label>
+          <input class="dark-input" type="number" id="pf-radiology-count" placeholder="e.g. 3 (enter 0 if none)" min="0"/>
+        </div>
+
+        <div class="form-group">
+          <label class="dark-label">Additional Infrastructure Notes</label>
+          <textarea class="dark-input" id="pf-infra-notes" style="height:72px;" placeholder="Any other details about your current infrastructure, network setup, or special requirements..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="width:100%;margin-top:.5rem;" onclick="submitProposal()">Submit Proposal Request →</button>
+      <p class="form-note">Proposals are delivered within 48 hours. <a href="#">Privacy Policy</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- FREE AUDIT -->
+<section id="audit">
+  <div class="audit-wrap">
+    <div class="audit-left reveal">
+      <div class="section-label">Free Offer</div>
+      <h2>Get a Free Legacy System Audit — No Strings Attached</h2>
+      <p class="section-desc">We audit your current HIS and produce a detailed report showing exactly what's missing, what it's costing you, and how to fix it.</p>
+      <div class="audit-checklist">
+        <div class="audit-item"><div class="audit-num">01</div><div class="audit-item-text"><strong>NHIS & ICD Compliance Review</strong><p>We check whether your coding, claims process, and documentation meet current NHIS and ICD-11 standards.</p></div></div>
+        <div class="audit-item"><div class="audit-num">02</div><div class="audit-item-text"><strong>Revenue Leakage Assessment</strong><p>We trace your patient journey from registration to billing to identify where services go unbilled.</p></div></div>
+        <div class="audit-item"><div class="audit-num">03</div><div class="audit-item-text"><strong>Data Integrity & Record Completeness</strong><p>We evaluate your medical records for completeness, consistency, and legal defensibility.</p></div></div>
+        <div class="audit-item"><div class="audit-num">04</div><div class="audit-item-text"><strong>HMO Agreement vs System Policy Match</strong><p>We compare your active HMO tariff agreements against what your system actually applies at point of care.</p></div></div>
+        <div class="audit-item"><div class="audit-num">05</div><div class="audit-item-text"><strong>HIPAA &amp; NDPR Readiness Check</strong><p>We assess your current data handling practices against HIPAA Privacy/Security Rules and Nigeria's NDPR — flagging any patient data risks.</p></div></div>
+        <div class="audit-item"><div class="audit-num">06</div><div class="audit-item-text"><strong>Branded Audit Report Delivered</strong><p>You receive a professional PDF report with findings, risk scores, and prioritised recommendations.</p></div></div>
+      </div>
+    </div>
+    <div class="audit-form reveal">
+      <h3>Request Your Free Audit</h3>
+      <p>Our team will contact you within 24 hours to schedule your audit visit.</p>
+      <div class="form-row">
+        <div class="form-group"><label class="light-label">First Name</label><input class="light-input" type="text" id="af-fname" placeholder="Dr. Emeka"/></div>
+        <div class="form-group"><label class="light-label">Last Name</label><input class="light-input" type="text" id="af-lname" placeholder="Okafor"/></div>
+      </div>
+      <div class="form-group"><label class="light-label">Hospital Name</label><input class="light-input" type="text" id="af-hospital" placeholder="St. Mary's Hospital, Abuja"/></div>
+      <div class="form-group"><label class="light-label">Your Role</label>
+        <select class="light-input" id="af-role"><option>Medical Director</option><option>Hospital Administrator</option><option>COO</option><option>IT Manager</option><option>Finance Manager</option><option>NHIS Desk Officer</option><option>Other</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="light-label">Phone</label><input class="light-input" type="tel" id="af-phone" placeholder="+234 800 000 0000"/></div>
+        <div class="form-group"><label class="light-label">Email</label><input class="light-input" type="email" id="af-email" placeholder="you@hospital.com"/></div>
+      </div>
+      <div class="form-group"><label class="light-label">Current System</label>
+        <select class="light-input" id="af-system"><option>No system (paper-based)</option><option>eTRACS</option><option>Axxess HIS</option><option>Custom Built</option><option>Other Legacy System</option></select>
+      </div>
+      <div class="form-group"><label class="light-label">Biggest Challenge Right Now</label>
+        <textarea class="light-input" id="af-challenge" placeholder="e.g. NHIS claims rejected, revenue tracking broken..."></textarea>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="submitAudit()">Request My Free Audit →</button>
+      <p style="font-size:.77rem;color:var(--muted);margin-top:.9rem;">Your information is confidential.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section id="social-proof">
+  <div class="section-head reveal">
+    <div class="section-label">Client Results & Pilot Programme</div>
+    <h2>Real Hospitals. Real Results.<br/>Coming Soon.</h2>
+    <p class="section-desc">We are currently finalising implementation at our first pilot hospitals. Case studies and testimonials will be published here as soon as our clients go live. We're actively seeking 3 more pilot hospitals.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem;margin-bottom:2.8rem;">
+    <div style="border:2px dashed var(--border);border-radius:16px;padding:2.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:200px;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">🏥</div>
+      <div style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;">Pilot Hospital #1</div>
+      <div style="font-size:.82rem;color:var(--muted);">Case study coming soon — implementation in progress</div>
+    </div>
+    <div style="border:2px dashed var(--border);border-radius:16px;padding:2.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:200px;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">🏥</div>
+      <div style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;">Pilot Hospital #2</div>
+      <div style="font-size:.82rem;color:var(--muted);">Case study coming soon — implementation in progress</div>
+    </div>
+    <div style="background:linear-gradient(135deg,var(--ink) 0%,var(--mid) 100%);border-radius:16px;padding:2rem;">
+      <h3 style="color:var(--white);font-size:1.15rem;font-weight:700;margin-bottom:.7rem;">Become a Pilot Reference Hospital</h3>
+      <p style="color:rgba(255,255,255,.62);font-size:.86rem;line-height:1.65;margin-bottom:1.4rem;">We are offering 3 hospitals a discounted implementation in exchange for a documented case study and reference access.</p>
+      <ul style="list-style:none;margin-bottom:1.5rem;">
+        <li style="color:rgba(255,255,255,.78);font-size:.82rem;padding:.28rem 0;display:flex;gap:.45rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Implementation at pilot pricing</li>
+        <li style="color:rgba(255,255,255,.78);font-size:.82rem;padding:.28rem 0;display:flex;gap:.45rem;"><span style="color:var(--accent);font-weight:700;">✓</span> 3-month dedicated support &amp; training</li>
+        <li style="color:rgba(255,255,255,.78);font-size:.82rem;padding:.28rem 0;display:flex;gap:.45rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Featured in our case study</li>
+        <li style="color:rgba(255,255,255,.78);font-size:.82rem;padding:.28rem 0;display:flex;gap:.45rem;"><span style="color:var(--accent);font-weight:700;">✓</span> Priority access to new features</li>
+      </ul>
+      <a href="#proposal" class="btn-primary" style="display:block;text-align:center">Apply for Pilot Slot →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="contact-left reveal">
+      <div class="section-label" style="color:var(--accent)">Book Your Demo</div>
+      <h2>See ULTI-MED Live<br/>in 15 Minutes</h2>
+      <p>We'll show you exactly how the system handles your specific challenges — NHIS claims, HMO tariff management, the Service Gate, or drug interaction alerts.</p>
+      <div class="contact-methods">
+        <a class="contact-method" href="https://wa.me/2348037766592" target="_blank"><span class="method-icon">💬</span><div><div class="method-label">WhatsApp (Fastest Response)</div><div class="method-value">+234 800 000 0000</div></div></a>
+        <a class="contact-method" href="tel:+2348037766592"><span class="method-icon">📞</span><div><div class="method-label">Direct Phone Line</div><div class="method-value">+234 800 000 0000</div></div></a>
+        <a class="contact-method" href="mailto:sales@ultimed.com.ng"><span class="method-icon">✉️</span><div><div class="method-label">Email</div><div class="method-value">sales@ultimed.com.ng</div></div></a>
+        <a class="contact-method" href="portal.html"><span class="method-icon">🌐</span><div><div class="method-label">Client Portal</div><div class="method-value">portal.ultimed.com.ng</div></div></a>
+      </div>
+    </div>
+    <div class="contact-form reveal">
+      <h3>Request a Demo</h3>
+      <p>We'll schedule a personalised demo within 24 hours.</p>
+      <div class="form-row">
+        <div class="form-group"><label class="dark-label">Full Name</label><input class="dark-input" type="text" id="cf-name" placeholder="Dr. Aisha Bello"/></div>
+        <div class="form-group"><label class="dark-label">Role</label><select class="dark-input" id="cf-role"><option>Medical Director</option><option>Hospital Administrator</option><option>COO / CFO</option><option>IT Manager</option><option>Other</option></select></div>
+      </div>
+      <div class="form-group"><label class="dark-label">Hospital Name</label><input class="dark-input" type="text" id="cf-hospital" placeholder="e.g. Evercare Hospital, Lagos"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="dark-label">Phone</label><input class="dark-input" type="tel" id="cf-phone" placeholder="+234 800 000 0000"/></div>
+        <div class="form-group"><label class="dark-label">Email</label><input class="dark-input" type="email" id="cf-email" placeholder="you@hospital.ng"/></div>
+      </div>
+      <div class="form-group"><label class="dark-label">I'm Most Interested In</label>
+        <select class="dark-input" id="cf-interest"><option>Full System Demo</option><option>NHIS / Claims Module</option><option>Service Gate / Revenue Module</option><option>Drug Interaction & Safety</option><option>HMO Policy Engine</option><option>Migrating From Legacy System</option><option>Pilot Hospital Programme</option></select>
+      </div>
+      <div class="form-group"><label class="dark-label">Notes / Preferred Demo Time</label><textarea class="dark-input" id="cf-notes" placeholder="Number of beds, current challenges, preferred demo time..."></textarea></div>
+      <button class="btn-primary" style="width:100%" onclick="submitDemo()">Book My Free Demo →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand-name"><img src="data:image/jpeg;base64,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" alt="ULTI-MED" style="height:28px;width:auto;"></div>
+      <div class="footer-brand-desc">Nigeria's most complete Hospital Information System. Built for African healthcare realities.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#calculator">Revenue Calculator</a>
+      <a href="#segments">Who It's For</a>
+      <a href="#videos">Video Library</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#downloads">Download Centre</a>
+      <a href="#proposal">Request Proposal</a>
+      <a href="#audit">Free Audit</a>
+      <a href="#social-proof">Pilot Programme</a>
+    </div>
+    <div class="footer-col">
+      <h4>Portal</h4>
+      <a href="portal.html">Client Login</a>
+      <a href="portal.html#crm">CRM Dashboard</a>
+      <a href="portal.html#proposals">Proposal Tracking</a>
+      <a href="portal.html#support">Support Tickets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="tel:+2348037766592">+234 800 000 0000</a>
+      <a href="mailto:sales@ultimed.com.ng">sales@ultimed.com.ng</a>
+      <a href="https://wa.me/2348037766592">WhatsApp</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 ULTI-MED Hospital Information System. Built in Nigeria, for Nigeria.</div>
+    <div style="display:flex;gap:1.2rem;">
+      <a href="#" style="font-size:.79rem;color:rgba(255,255,255,.35);text-decoration:none;">Privacy Policy</a>
+      <a href="#" style="font-size:.79rem;color:rgba(255,255,255,.35);text-decoration:none;">Terms of Service</a>
+      <a href="portal.html" style="font-size:.79rem;color:var(--accent);text-decoration:none;">Client Portal →</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── FEATURES DATA ──
+const features=[
+  {icon:"💊",title:"Drug Interaction Alerting",desc:"Real-time cross-checking of every prescription against a complete drug interaction database. Alerts clinicians before a dangerous combination is dispensed.",tag:"safety",tagLabel:"Patient Safety",tagClass:"tag-safety"},
+  {icon:"🚨",title:"Vital Sign Alerts & Escalation",desc:"Automated alerts trigger when patient vitals cross critical thresholds. The right team member is notified instantly — before a crisis becomes a catastrophe.",tag:"safety",tagLabel:"Patient Safety",tagClass:"tag-safety"},
+  {icon:"🚪",title:"Service Gate — Revenue Lock",desc:"No service is rendered without payment verification or approved credit. Prevents revenue leakage at every touchpoint — OPD, pharmacy, lab, theatre.",tag:"revenue",tagLabel:"Revenue",tagClass:"tag-revenue"},
+  {icon:"📋",title:"ICD-11 Coding Engine",desc:"Automatic ICD-11 code assignment for all diagnoses and procedures. Dramatically increases claims approval rates and supports accurate epidemiological reporting.",tag:"compliance",tagLabel:"Compliance",tagClass:"tag-compliance"},
+  {icon:"🤝",title:"Full NHIS Module",desc:"Complete NHIS workflows from enrolment to capitation claims, pre-authorization, and dispute resolution — aligned with current NHIS regulations.",tag:"compliance",tagLabel:"Compliance",tagClass:"tag-compliance"},
+  {icon:"⚙️",title:"HMO Policy Engine",desc:"Configure and automate tariff policies for every HMO, retainer, or state health scheme. Each agreement is applied precisely — zero confusion, zero disputes.",tag:"revenue",tagLabel:"Revenue",tagClass:"tag-revenue"},
+  {icon:"🗣️",title:"AI Speech Recognition",desc:"Clinicians speak; the system transcribes. Structured clinical data captured by voice — reducing keyboard fatigue and improving documentation completeness.",tag:"ai",tagLabel:"AI Technology",tagClass:"tag-ai"},
+  {icon:"✅",title:"Data Validation Engine",desc:"Every field, every form, every entry is validated in real time. Mandatory fields, format checks, and logical rules ensure your data is always audit-ready.",tag:"data",tagLabel:"Data Integrity",tagClass:"tag-data"},
+  {icon:"📊",title:"Statistical & Epidemiological Reports",desc:"Generate WHO-standard morbidity reports, occupancy analytics, and disease burden statistics — powered by clean, ICD-11 coded data.",tag:"data",tagLabel:"Data Integrity",tagClass:"tag-data"},
+  {icon:"🔄",title:"Private HMO Claims Automation",desc:"Build custom claim templates per HMO. The system populates, validates, and submits claims automatically — reducing billing workload by up to 70%.",tag:"compliance",tagLabel:"Compliance",tagClass:"tag-compliance"},
+  {icon:"📱",title:"Patient Portal & Mobile Access",desc:"Patients view their records, results, and appointment history. Clinicians access records securely from any device, anywhere in the facility.",tag:"ai",tagLabel:"AI Technology",tagClass:"tag-ai"},
+  {icon:"🏦",title:"Retainerships & Corporate Billing",desc:"Manage corporate retainer clients with credit limits, monthly statements, and automatic billing cycles — without manual reconciliation.",tag:"revenue",tagLabel:"Revenue",tagClass:"tag-revenue"},
+  {icon:"🧬",title:"State Health Scheme Integration",desc:"Supports State Contributory Health Agencies (LASHMA, AMHSS, BSHIS) with scheme-specific eligibility checks and claims processing.",tag:"compliance",tagLabel:"Compliance",tagClass:"tag-compliance"},
+  {icon:"🔏",title:"HIPAA & NDPR Compliance Framework",desc:"ULTI-MED is architected to meet HIPAA privacy and security rules alongside Nigeria's NDPR. Audit trails, encryption at rest, role-based access, and breach notification workflows are all built in.",tag:"compliance",tagLabel:"Compliance",tagClass:"tag-compliance"},
+  {icon:"🔐",title:"Role-Based Access Control",desc:"Every user sees only what their role permits. Granular permissions protect patient privacy and prevent financial fraud.",tag:"data",tagLabel:"Data Integrity",tagClass:"tag-data"},
+  {icon:"📅",title:"Appointment & Theatre Scheduling",desc:"Intelligent scheduling across OPD, specialists, and theatres. Conflict detection, automated reminders, and utilisation reports included.",tag:"revenue",tagLabel:"Revenue",tagClass:"tag-revenue"},
+];
+
+const colors={safety:'rgba(229,72,77,.1)',revenue:'rgba(0,200,150,.1)',compliance:'rgba(244,169,34,.12)',ai:'rgba(139,92,246,.12)',data:'rgba(59,130,246,.12)'};
+let currentFilter='all';
+function renderFeatures(){
+  const g=document.getElementById('features-grid');
+  const sourceData = window.dbFeatures && window.dbFeatures.length ? window.dbFeatures.map(x=>({...x,tag:x.category,tagLabel:x.tag_label,tagClass:x.tag_class})) : features;
+  const f=currentFilter==='all'?sourceData:sourceData.filter(x=>x.tag===currentFilter||x.category===currentFilter);
+  g.innerHTML=f.map(x=>`<div class="feature-card"><div class="feat-icon-wrap" style="background:${colors[x.tag]}">${x.icon}</div><h3>${x.title}</h3><p>${x.desc}</p><span class="feat-tag ${x.tagClass}">${x.tagLabel}</span></div>`).join('');
+}
+function filterFeats(tag,btn){
+  currentFilter=tag;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeatures();
+}
+renderFeatures();
+
+// ── VIDEO LIBRARY ──
+const videos=[
+  {title:"ULTI-MED Full System Overview",desc:"A complete walkthrough of all major modules — from patient registration to final billing and claims submission.",cat:"Overview",duration:"12:34",thumb:"🏥"},
+  {title:"The Service Gate Explained",desc:"See exactly how the Service Gate blocks unbilled services at pharmacy, lab, theatre, and OPD — in real time.",cat:"Revenue",duration:"6:22",thumb:"🚪"},
+  {title:"Drug Interaction Alert System",desc:"Watch the system flag a dangerous drug combination before it reaches the patient — live, unscripted demo.",cat:"Safety",duration:"4:15",thumb:"💊"},
+  {title:"NHIS Claims — End to End",desc:"From patient enrolment to claim submission and approval — zero manual steps, ICD-11 coded automatically.",cat:"Compliance",duration:"8:47",thumb:"📋"},
+  {title:"HMO Policy Engine Setup",desc:"How to configure different tariff policies for multiple HMOs, retainers, and State Health Schemes simultaneously.",cat:"Compliance",duration:"7:30",thumb:"⚙️"},
+  {title:"AI Speech Recognition in Clinic",desc:"A clinician dictates consultation notes; the system transcribes and structures the data — no typing needed.",cat:"AI",duration:"5:08",thumb:"🗣️"},
+];
+const vg=document.getElementById('video-grid');
+vg.innerHTML=videos.map((v,i)=>`
+<div class="video-card">
+  <div class="video-thumb" onclick="openVideo(${i})" style="background:linear-gradient(135deg,#112240,#1E3A5F)">
+    <div style="font-size:3.5rem;position:absolute;">${v.thumb}</div>
+    <div class="video-play" style="position:absolute;bottom:12px;right:12px;width:44px;height:44px;font-size:1rem;">▶</div>
+    <div class="video-badge">${v.cat}</div>
+  </div>
+  <div class="video-info">
+    <h3>${v.title}</h3>
+    <p>${v.desc}</p>
+    <div class="video-meta">
+      <span class="video-duration">⏱ ${v.duration}</span>
+      <span class="video-cat">${v.cat}</span>
+    </div>
+  </div>
+</div>`).join('');
+
+function openVideo(i){
+  const v=videos[i];
+  document.getElementById('modal-video-title').textContent=v.title;
+  document.getElementById('modal-video-desc').textContent=v.desc;
+  document.getElementById('videoModal').classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.getElementById('videoModal').addEventListener('click',function(e){if(e.target===this)closeModal('videoModal');});
+
+// ── DOWNLOADS ──
+const downloads=[
+  {icon:"📄",type:"pdf",title:"ULTI-MED Product Brochure",desc:"Full overview of all modules, features, and key differentiators. Ideal for sharing with your leadership team.",size:"2.4 MB",file:"#"},
+  {icon:"📊",type:"ppt",title:"Executive Presentation Deck",desc:"A boardroom-ready slide deck covering the ROI case for switching to ULTI-MED. Includes cost-benefit analysis.",size:"5.1 MB",file:"#"},
+  {icon:"📋",type:"pdf",title:"NHIS Compliance Checklist",desc:"A detailed audit checklist covering all current NHIS regulations and how your system should be configured.",size:"1.1 MB",file:"#"},
+  {icon:"💰",type:"xls",title:"Revenue Leak Calculator (Excel)",desc:"Download the full Excel model to calculate your hospital's specific revenue leakage across all categories.",size:"890 KB",file:"#"},
+  {icon:"📝",type:"doc",title:"Implementation Roadmap Template",desc:"A week-by-week implementation guide showing exactly how the ULTI-MED rollout process works.",size:"1.3 MB",file:"#"},
+  {icon:"🔒",type:"pdf",title:"Data Security & NDPR Compliance Guide",desc:"How ULTI-MED handles patient data under Nigeria's NDPR regulations and international best practices.",size:"980 KB",file:"#"},
+];
+const dg=document.getElementById('downloads-grid');
+dg.innerHTML=downloads.map(d=>`
+<div class="download-card">
+  <div class="dl-icon-row">
+    <div class="dl-icon ${d.type}">${d.icon}</div>
+    <div class="dl-title">${d.title}</div>
+  </div>
+  <div class="dl-desc">${d.desc}</div>
+  <div class="dl-meta">
+    <span class="dl-size">${d.size}</span>
+    <a href="${d.file}" class="btn-dl" onclick="showToast('📥 Download starting...');return false;">Download</a>
+  </div>
+</div>`).join('');
+
+// ── CALCULATOR ──
+function fmt(n){return'₦'+Math.round(n).toLocaleString('en-NG');}
+function calcLoss(){
+  const beds=+document.getElementById('beds').value||80;
+  const patients=+document.getElementById('patients').value||120;
+  const fee=+document.getElementById('fee').value||3500;
+  const hmo=(+document.getElementById('hmo').value||40)/100;
+  const ht=document.getElementById('htype').value;
+  const m={private:1,tertiary:1.6,faith:.85,specialist:.75}[ht]||1;
+  const s=(beds/100)*m;
+  const u=Math.round(patients*250*fee*0.034*s);
+  const c=Math.round(patients*365*fee*hmo*0.22*0.12*s);
+  const d=Math.round(beds*7500*s);
+  const de=Math.round(beds*4200*s);
+  const dr=Math.round(beds*3100*s);
+  const t=u+c+d+de+dr;
+  document.getElementById('result-loss').textContent=fmt(t);
+  document.getElementById('result-savings').textContent=fmt(Math.round(t*.8));
+  document.getElementById('b1').textContent='-'+fmt(u);
+  document.getElementById('b2').textContent='-'+fmt(c);
+  document.getElementById('b3').textContent='-'+fmt(d);
+  document.getElementById('b4').textContent='-'+fmt(de);
+  document.getElementById('b5').textContent='-'+fmt(dr);
+}
+calcLoss();
+
+// ── FORM SUBMISSIONS ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
+function waMsg(txt){window.open('https://wa.me/2348037766592?text='+encodeURIComponent(txt),'_blank');}
+
+function submitProposal(){
+  const name=document.getElementById('pf-fname').value;
+  const hospital=document.getElementById('pf-hospital').value;
+  const phone=document.getElementById('pf-phone').value;
+  if(!name||!hospital||!phone){showToast('⚠️ Please fill in Name, Hospital, and Phone.');return;}
+  const getRadio=(n)=>{const el=document.querySelector(`input[name="${n}"]:checked`);return el?el.value:'Not specified';};
+  const rooms=document.getElementById('pf-consult-rooms').value||'Not specified';
+  const radCount=document.getElementById('pf-radiology-count').value||'0';
+  const infraNotes=document.getElementById('pf-infra-notes').value||'None';
+  const msg=`Hello ULTI-MED,
+
+*PROPOSAL REQUEST*
+Name: ${name} ${document.getElementById('pf-lname').value}
+Hospital: ${hospital}
+Role: ${document.getElementById('pf-role').value}
+Phone: ${phone}
+Email: ${document.getElementById('pf-email').value}
+No. of Beds: ${document.getElementById('pf-beds').value}
+Current System: ${document.getElementById('pf-system').value}
+Priorities: ${document.getElementById('pf-notes').value}
+
+*INFRASTRUCTURE REQUIREMENTS*
+Consulting Rooms: ${rooms}
+LAN Connectivity Needed: ${getRadio('lan')}
+Wi-Fi Connectivity Needed: ${getRadio('wifi')}
+Supply Computers: ${getRadio('computers')}
+Has Power Backup: ${getRadio('power')}
+Radiology Online Integration: ${getRadio('radiology')}
+Centralised Radiology Station: ${getRadio('radio-station')}
+No. of Radiology Modalities: ${radCount}
+Infrastructure Notes: ${infraNotes}`;
+  waMsg(msg);
+  // Save to Supabase database
+  saveProposalToDB({
+    hospital: hospital,
+    contact_name: name + ' ' + document.getElementById('pf-lname').value,
+    modules: document.getElementById('pf-notes').value,
+    bed_count: document.getElementById('pf-beds').value,
+    notes: infraNotes,
+    status: 'New'
+  });
+  saveLeadToDB({
+    first_name: name,
+    last_name: document.getElementById('pf-lname').value,
+    hospital: hospital,
+    role: document.getElementById('pf-role').value,
+    phone: phone,
+    email: document.getElementById('pf-email').value,
+    bed_count: document.getElementById('pf-beds').value,
+    current_system: document.getElementById('pf-system').value,
+    consulting_rooms: rooms,
+    lan_needed: getRadio('lan'),
+    wifi_needed: getRadio('wifi'),
+    computers_needed: getRadio('computers'),
+    power_backup: getRadio('power'),
+    radiology_integration: getRadio('radiology'),
+    radiology_station: getRadio('radio-station'),
+    radiology_count: radCount,
+    infra_notes: infraNotes,
+    stage: 'New Lead',
+    source: 'Website - Proposal Form'
+  });
+  showToast('✅ Redirecting to WhatsApp with full details...');
+}
+function submitAudit(){
+  const name=document.getElementById('af-fname').value;
+  const hospital=document.getElementById('af-hospital').value;
+  const phone=document.getElementById('af-phone').value;
+  if(!name||!hospital||!phone){showToast('⚠️ Please fill in Name, Hospital, and Phone.');return;}
+  waMsg(`Hello ULTI-MED,\n\nFree Audit Request:\nName: ${name}\nHospital: ${hospital}\nPhone: ${phone}\nChallenge: ${document.getElementById('af-challenge').value}`);
+  saveAuditToDB({
+    first_name: name,
+    last_name: document.getElementById('af-lname').value,
+    hospital: hospital,
+    role: document.getElementById('af-role').value,
+    phone: phone,
+    email: document.getElementById('af-email').value,
+    current_system: document.getElementById('af-system').value,
+    challenge: document.getElementById('af-challenge').value,
+    status: 'New'
+  });
+  showToast('✅ Redirecting to WhatsApp...');
+}
+function submitDemo(){
+  const name=document.getElementById('cf-name').value;
+  const hospital=document.getElementById('cf-hospital').value;
+  const phone=document.getElementById('cf-phone').value;
+  if(!name||!hospital||!phone){showToast('⚠️ Please fill in Name, Hospital, and Phone.');return;}
+  waMsg(`Hello ULTI-MED,\n\nDemo Request:\nName: ${name}\nHospital: ${hospital}\nPhone: ${phone}\nInterested in: ${document.getElementById('cf-interest').value}`);
+  saveLeadToDB({
+    first_name: name.split(' ')[0],
+    last_name: name.split(' ').slice(1).join(' '),
+    hospital: hospital,
+    role: document.getElementById('cf-role').value,
+    phone: phone,
+    email: document.getElementById('cf-email').value,
+    notes: document.getElementById('cf-interest').value + '\n' + document.getElementById('cf-notes').value,
+    stage: 'New Lead',
+    source: 'Website - Demo Request'
+  });
+  showToast('✅ Redirecting to WhatsApp...');
+}
+
+// ── NAV ──
+function toggleMenu(){
+  const nl=document.getElementById('navLinks');
+  const open=nl.style.display==='flex';
+  nl.style.display=open?'none':'flex';
+  if(!open){nl.style.cssText='display:flex;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:rgba(11,17,32,.97);padding:1.5rem 5%;gap:1.25rem;z-index:300;';}
+}
+
+// ── REVEAL ──
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ══════════════════════════════════════════
+// SUPABASE DATABASE CONNECTION
+// ══════════════════════════════════════════
+const SUPA_URL = 'https://bszvlohnmsrwdsjmxrvz.supabase.co';
+const SUPA_KEY = 'sb_publishable_BvT_cKAgC0xRRX6yc_rNBA_NmdTENlt';
+
+async function supaFetch(table, params='') {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}&order=sort_order.asc,created_at.asc`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+    });
+    return await res.json();
+  } catch(e) { console.error('Supabase error:', e); return []; }
+}
+
+async function supaInsert(table, body) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
+}
+
+// ── LOAD VIDEOS FROM DATABASE ──
+async function loadVideosFromDB() {
+  const data = await supaFetch('videos', 'published=eq.true');
+  const vg = document.getElementById('video-grid');
+  if (!vg) return;
+  if (!data || !data.length) { vg.innerHTML = '<p style="color:var(--muted);padding:2rem;">No videos published yet. Add them in the CMS admin panel.</p>'; return; }
+  vg.innerHTML = data.map((v, i) => {
+    const ytId = extractYTId(v.youtube_url || '');
+    const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+    return `
+    <div class="video-card">
+      <div class="video-thumb" onclick="openVideoPlayer('${ytId}','${v.title}','${(v.description||'').replace(/'/g,"\'")}',${i})" style="background:linear-gradient(135deg,#112240,#1E3A5F);cursor:pointer;">
+        ${thumbUrl ? `<img src="${thumbUrl}" alt="${v.title}" style="width:100%;height:100%;object-fit:cover;opacity:.8;"/>` : `<div style="font-size:3.5rem;position:absolute;">${v.thumb_emoji||'🎬'}</div>`}
+        <div class="video-play" style="position:absolute;bottom:12px;right:12px;width:44px;height:44px;font-size:1rem;">▶</div>
+        <div class="video-badge">${v.category||'Video'}</div>
+      </div>
+      <div class="video-info">
+        <h3>${v.title}</h3>
+        <p>${v.description||''}</p>
+        <div class="video-meta">
+          <span class="video-duration">⏱ ${v.duration||'—'}</span>
+          <span class="video-cat">${v.category||''}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function extractYTId(url) {
+  if (!url) return '';
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+
+function openVideoPlayer(ytId, title, desc, i) {
+  document.getElementById('modal-video-title').textContent = title;
+  document.getElementById('modal-video-desc').textContent = desc;
+  const wrap = document.querySelector('.modal-video-wrap');
+  if (ytId) {
+    wrap.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytId}?autoplay=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="border-radius:10px;"></iframe>`;
+  } else {
+    wrap.innerHTML = `<div style="text-align:center;color:rgba(255,255,255,.5);padding:2rem;"><div style="font-size:3rem;">🎬</div><p style="margin-top:.5rem;font-size:.9rem;">Video coming soon</p></div>`;
+  }
+  document.getElementById('videoModal').classList.add('open');
+}
+
+// ── LOAD DOWNLOADS FROM DATABASE ──
+async function loadDownloadsFromDB() {
+  const data = await supaFetch('downloads', 'visibility=eq.public');
+  const dg = document.getElementById('downloads-grid');
+  if (!dg) return;
+  if (!data || !data.length) { dg.innerHTML = '<p style="color:var(--muted);padding:2rem;">No downloads available yet.</p>'; return; }
+  dg.innerHTML = data.map(d => `
+    <div class="download-card">
+      <div class="dl-icon-row">
+        <div class="dl-icon ${d.file_type||'pdf'}">${d.file_icon||'📄'}</div>
+        <div class="dl-title">${d.title}</div>
+      </div>
+      <div class="dl-desc">${d.description||''}</div>
+      <div class="dl-meta">
+        <span class="dl-size">${d.file_size||'—'}</span>
+        <a href="${d.file_url&&d.file_url!=='#'?d.file_url:'#'}" target="_blank" class="btn-dl" onclick="${d.file_url&&d.file_url!=='#'?'':'showToast(\'File coming soon!\');return false;'}">Download</a>
+      </div>
+    </div>`).join('');
+}
+
+// ── LOAD FEATURES FROM DATABASE ──
+async function loadFeaturesFromDB() {
+  const data = await supaFetch('features', 'published=eq.true');
+  if (!data || !data.length) return;
+  // Store in global for filtering
+  window.dbFeatures = data;
+  renderFeatures();
+}
+
+// ── LOAD TESTIMONIALS FROM DATABASE ──
+async function loadTestimonialsFromDB() {
+  const data = await supaFetch('testimonials', 'published=eq.true');
+  const grid = document.querySelector('#social-proof .proof-grid');
+  if (!grid || !data || !data.length) return;
+  // Remove placeholder cards and add real ones
+  const pilotCard = grid.querySelector('.pilot-cta');
+  grid.innerHTML = '';
+  data.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'proof-card reveal';
+    card.innerHTML = `<div class="quote-mark">"</div><blockquote>${t.quote}</blockquote>
+      <div class="proof-author">
+        <div class="author-avatar">${t.author_initials||t.author_name?.substring(0,2)||'?'}</div>
+        <div><div class="author-name">${t.author_name}</div><div class="author-role">${t.author_role||''}, ${t.hospital||''}</div></div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  if (pilotCard) grid.appendChild(pilotCard);
+}
+
+// ── SAVE FORMS TO DATABASE ──
+async function saveLeadToDB(formData) {
+  return await supaInsert('leads', formData);
+}
+async function saveProposalToDB(formData) {
+  return await supaInsert('proposals', formData);
+}
+async function saveAuditToDB(formData) {
+  return await supaInsert('audit_requests', formData);
+}
+async function saveTicketToDB(formData) {
+  return await supaInsert('tickets', formData);
+}
+
+// ── INITIALISE ALL DB CONTENT ──
+async function initFromDB() {
+  await Promise.all([
+    loadVideosFromDB(),
+    loadDownloadsFromDB(),
+    loadFeaturesFromDB(),
+    loadTestimonialsFromDB()
+  ]);
+  // Re-observe reveal elements
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+// Start loading from DB
+initFromDB();
+
+</script>
+</body>
+</html>

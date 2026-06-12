@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ULTI-MED Portal — Core · Specialist · Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0B1120;--deep:#112240;--mid:#1E3A5F;
+  --accent:#00C896;--gold:#F4A922;--danger:#E5484D;
+  --warn:#F59E0B;--info:#3B82F6;--purple:#8B5CF6;
+  --surface:#F5F8FF;--card:#FFFFFF;--muted:#64748B;
+  --border:#E2E8F0;--text:#1E293B;--white:#FFFFFF;
+  --sidebar:220px;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font-body);background:var(--surface);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--ink);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:fixed;top:0;left:0;right:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.07);}
+.topbar-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+.logo-box{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#007A5C);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;color:white;font-family:var(--font-display);}
+.brand-name{font-family:var(--font-display);font-size:1.1rem;color:var(--white);letter-spacing:-.4px;}
+.brand-name span{color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.topbar-badge{background:rgba(0,200,150,.15);border:1px solid rgba(0,200,150,.25);color:var(--accent);font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;letter-spacing:.04em;}
+.topbar-user{display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.75);font-size:.83rem;cursor:pointer;}
+.user-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--mid));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:white;}
+.home-link{color:rgba(255,255,255,.5);font-size:.8rem;text-decoration:none;transition:color .2s;}
+.home-link:hover{color:var(--accent);}
+.notif-btn{background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.7);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;position:relative;}
+.notif-dot{width:8px;height:8px;background:var(--danger);border-radius:50%;position:absolute;top:5px;right:5px;border:2px solid var(--ink);}
+
+/* ── LAYOUT ── */
+.layout{display:flex;margin-top:56px;min-height:calc(100vh - 56px);}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--deep);border-right:1px solid rgba(255,255,255,.07);position:fixed;top:56px;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column;}
+.sidebar-section{padding:1.2rem 1rem .5rem;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;}
+.sidebar-item{display:flex;align-items:center;gap:.7rem;padding:.65rem 1rem;margin:.15rem .6rem;border-radius:9px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.84rem;font-weight:500;cursor:pointer;transition:all .18s;border:none;background:none;width:calc(100% - 1.2rem);text-align:left;}
+.sidebar-item:hover{background:rgba(255,255,255,.06);color:var(--white);}
+.sidebar-item.active{background:rgba(0,200,150,.15);color:var(--accent);font-weight:600;}
+.sidebar-item .s-icon{font-size:1.05rem;width:20px;text-align:center;flex-shrink:0;}
+.sidebar-badge{margin-left:auto;background:var(--danger);color:white;font-size:.68rem;font-weight:700;padding:.14rem .45rem;border-radius:50px;min-width:18px;text-align:center;}
+.sidebar-badge.green{background:var(--accent);color:var(--ink);}
+.sidebar-footer{margin-top:auto;padding:1rem;border-top:1px solid rgba(255,255,255,.07);}
+.sidebar-footer a{display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,.45);font-size:.81rem;text-decoration:none;padding:.5rem .4rem;border-radius:7px;transition:color .2s;}
+.sidebar-footer a:hover{color:var(--accent);}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;padding:2rem 2.5rem;max-width:1200px;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:2rem;}
+.page-header h1{font-family:var(--font-display);font-size:1.7rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.page-header p{font-size:.88rem;color:var(--muted);}
+.page-header-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;}
+
+/* CARDS & GRIDS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-bottom:2rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;}
+.stat-card-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;}
+.stat-card-value{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--ink);line-height:1;}
+.stat-card-value.green{color:#008A67;}
+.stat-card-value.red{color:var(--danger);}
+.stat-card-value.blue{color:var(--info);}
+.stat-card-change{font-size:.76rem;margin-top:.35rem;}
+.change-up{color:#008A67;}
+.change-down{color:var(--danger);}
+
+/* TABLES */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.8rem;}
+.table-header{display:flex;justify-content:space-between;align-items:center;padding:1.3rem 1.5rem;border-bottom:1px solid var(--border);}
+.table-header h3{font-size:1rem;font-weight:700;color:var(--ink);}
+.table-actions{display:flex;gap:.6rem;align-items:center;}
+.search-input{padding:.42rem .9rem;border:1px solid var(--border);border-radius:7px;font-size:.83rem;font-family:var(--font-body);outline:none;background:var(--surface);}
+.search-input:focus{border-color:var(--accent);}
+table{width:100%;border-collapse:collapse;}
+th{padding:.8rem 1.2rem;text-align:left;font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border);}
+td{padding:.9rem 1.2rem;font-size:.86rem;color:var(--text);border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,200,150,.03);}
+
+/* BADGES / PILLS */
+.pill{display:inline-block;padding:.24rem .72rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.03em;}
+.pill-green{background:rgba(0,200,150,.12);color:#007A5C;}
+.pill-blue{background:rgba(59,130,246,.12);color:#1D4ED8;}
+.pill-yellow{background:rgba(244,169,34,.14);color:#92620A;}
+.pill-red{background:rgba(229,72,77,.12);color:#B91C1C;}
+.pill-purple{background:rgba(139,92,246,.12);color:#5B21B6;}
+.pill-gray{background:rgba(100,116,139,.1);color:#475569;}
+
+/* BUTTONS */
+.btn{padding:.5rem 1.1rem;border-radius:7px;font-size:.83rem;font-weight:600;font-family:var(--font-body);cursor:pointer;border:none;transition:all .18s;text-decoration:none;display:inline-block;}
+.btn-sm{padding:.38rem .85rem;font-size:.78rem;}
+.btn-accent{background:var(--accent);color:var(--ink);}
+.btn-accent:hover{opacity:.88;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:rgba(229,72,77,.1);color:var(--danger);border:1px solid rgba(229,72,77,.2);}
+.btn-danger:hover{background:var(--danger);color:white;}
+.btn-ghost{background:rgba(0,200,150,.1);color:#007A5C;border:1px solid rgba(0,200,150,.2);}
+
+/* PROGRESS BAR */
+.progress-bar{background:var(--border);border-radius:50px;height:6px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:50px;background:var(--accent);transition:width .4s;}
+.progress-fill.gold{background:var(--gold);}
+.progress-fill.red{background:var(--danger);}
+
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem;}
+.kanban-col{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem;}
+.kanban-col-head{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;}
+.kanban-count{background:var(--surface);padding:.15rem .5rem;border-radius:50px;font-size:.72rem;color:var(--muted);}
+.kanban-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;margin-bottom:.7rem;cursor:pointer;transition:border-color .18s,box-shadow .18s;}
+.kanban-card:hover{border-color:var(--accent);box-shadow:0 4px 15px rgba(0,200,150,.1);}
+.kanban-card h4{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.kanban-card p{font-size:.78rem;color:var(--muted);line-height:1.5;}
+.kanban-card-meta{display:flex;justify-content:space-between;align-items:center;margin-top:.6rem;}
+.kanban-card-value{font-size:.78rem;font-weight:700;color:var(--accent);}
+
+/* TIMELINE */
+.timeline{border-left:2px solid var(--border);margin-left:1rem;padding-left:1.5rem;}
+.timeline-item{position:relative;margin-bottom:1.4rem;}
+.timeline-item::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--accent);position:absolute;left:-1.9rem;top:.25rem;border:2px solid var(--white);}
+.timeline-item.gray::before{background:var(--muted);}
+.tl-time{font-size:.74rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:.2rem;}
+.tl-text{font-size:.86rem;color:var(--text);}
+
+/* FORMS */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;}
+.form-card h3{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.form-card>p{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fgroup{margin-bottom:1rem;}
+.fgroup label{display:block;font-size:.79rem;font-weight:600;color:var(--text);margin-bottom:.38rem;}
+.fgroup input,.fgroup select,.fgroup textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.65rem .9rem;font-size:.88rem;font-family:var(--font-body);color:var(--text);outline:none;transition:border-color .2s;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{border-color:var(--accent);}
+.fgroup textarea{height:90px;resize:vertical;}
+
+/* SUBSCRIPTION CARDS */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.4rem;margin-bottom:2rem;}
+.plan-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1.8rem;transition:border-color .2s;}
+.plan-card.current{border-color:var(--accent);}
+.plan-card.popular{border-color:var(--gold);}
+.plan-badge{display:inline-block;margin-bottom:.8rem;font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;}
+.plan-badge.active-badge{background:rgba(0,200,150,.12);color:#007A5C;}
+.plan-badge.pop-badge{background:rgba(244,169,34,.14);color:#92620A;}
+.plan-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.plan-price{font-size:1.9rem;font-weight:700;color:var(--ink);font-family:var(--font-display);margin-bottom:1rem;}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--muted);}
+.plan-features{list-style:none;margin-bottom:1.4rem;}
+.plan-features li{font-size:.83rem;color:var(--muted);padding:.3rem 0;border-bottom:1px solid var(--border);display:flex;gap:.5rem;}
+.plan-features li::before{content:"✓";color:var(--accent);font-weight:700;flex-shrink:0;}
+
+/* TICKET SYSTEM */
+.ticket-list{display:flex;flex-direction:column;gap:.9rem;}
+.ticket-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;transition:border-color .2s;cursor:pointer;}
+.ticket-row:hover{border-color:var(--accent);}
+.ticket-id{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);min-width:70px;}
+.ticket-body{flex:1;}
+.ticket-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:.18rem;}
+.ticket-meta{font-size:.78rem;color:var(--muted);}
+.ticket-priority{font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:50px;min-width:55px;text-align:center;}
+.tp-high{background:rgba(229,72,77,.12);color:#B91C1C;}
+.tp-med{background:rgba(244,169,34,.14);color:#92620A;}
+.tp-low{background:rgba(0,200,150,.12);color:#007A5C;}
+.ticket-detail{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:1.5rem;display:none;}
+.ticket-detail.open{display:block;}
+
+/* CHART BAR SIMPLE */
+.bar-chart{display:flex;flex-direction:column;gap:.7rem;}
+.bar-row{display:flex;align-items:center;gap:.9rem;}
+.bar-label{font-size:.8rem;color:var(--muted);min-width:120px;text-align:right;}
+.bar-track{flex:1;height:10px;background:var(--border);border-radius:50px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:50px;background:var(--accent);}
+.bar-val{font-size:.8rem;font-weight:700;color:var(--ink);min-width:50px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:var(--ink);padding:.88rem 1.4rem;border-radius:12px;font-weight:700;font-size:.88rem;z-index:999;transform:translateY(120%);transition:transform .3s;box-shadow:0 8px 30px rgba(0,200,150,.38);}
+.toast.show{transform:translateY(0);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--white);border-radius:18px;padding:2.2rem;max-width:540px;width:100%;position:relative;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.18);}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--surface);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.modal-box h3{font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.modal-box>p{font-size:.87rem;color:var(--muted);margin-bottom:1.5rem;}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:1.5rem 1rem;}
+  .kanban{grid-template-columns:1fr 1fr;}
+  .frow{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="newLeadModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('newLeadModal')">✕</button>
+    <h3>Add New Lead</h3>
+    <p>Enter the prospect hospital details below.</p>
+    <div class="frow"><div class="fgroup"><label>Contact Name</label><input type="text" placeholder="Dr. Emeka Okafor"/></div><div class="fgroup"><label>Role</label><select><option>Medical Director</option><option>Administrator</option><option>IT Manager</option></select></div></div>
+    <div class="fgroup"><label>Hospital Name</label><input type="text" placeholder="St. Mary's Hospital"/></div>
+    <div class="frow"><div class="fgroup"><label>Phone</label><input type="tel" placeholder="+234 803 776 6592"/></div><div class="fgroup"><label>Email</label><input type="email" placeholder="dr@hospital.com"/></div></div>
+    <div class="frow"><div class="fgroup"><label>Bed Count</label><select><option>Under 30</option><option>30–100</option><option>100–300</option><option>300+</option></select></div><div class="fgroup"><label>Stage</label><select><option>New Lead</option><option>Contacted</option><option>Demo Scheduled</option><option>Proposal Sent</option></select></div></div>
+    <div class="fgroup"><label>Notes</label><textarea placeholder="Source, key pain points, next steps..."></textarea></div>
+    <button class="btn btn-accent" style="width:100%" onclick="addLead()">Save Lead →</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newTicketModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('newTicketModal')">✕</button>
+    <h3>Raise a Support Ticket</h3>
+    <p>Describe your issue and our team will respond within the agreed SLA.</p>
+    <div class="fgroup"><label>Issue Title</label><input type="text" id="tk-title" placeholder="e.g. NHIS claims not submitting"/></div>
+    <div class="frow">
+      <div class="fgroup"><label>Module Affected</label><select id="tk-module"><option>NHIS Module</option><option>Billing / Service Gate</option><option>Drug Interaction</option><option>HMO Policy Engine</option><option>Speech Recognition</option><option>Reports</option><option>HIPAA / NDPR Compliance</option><option>Radiology Integration</option><option>Other</option></select></div>
+      <div class="fgroup"><label>Priority</label><select id="tk-priority"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+    </div>
+    <div class="fgroup"><label>Description</label><textarea id="tk-desc" placeholder="Please describe the issue in detail, including any error messages, steps to reproduce, and impact on operations..."></textarea></div>
+    <div class="fgroup"><label>Hospital / Facility Name</label><input type="text" id="tk-hospital" placeholder="Your hospital name"/></div>
+    <button class="btn btn-accent" style="width:100%" onclick="submitTicket()">Submit Ticket →</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newProposalModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeM('newProposalModal')">✕</button>
+    <h3>Create New Proposal</h3>
+    <p>Generate a proposal for a prospect or existing client.</p>
+    <div class="fgroup"><label>Hospital / Client Name</label><input type="text" placeholder="e.g. Reddington Hospital"/></div>
+    <div class="frow"><div class="fgroup"><label>Modules Included</label><select><option>Full System</option><option>NHIS Only</option><option>Billing + HMO</option><option>Custom Selection</option></select></div><div class="fgroup"><label>Bed Count</label><select><option>Under 30</option><option>30–100</option><option>100–300</option><option>300+</option></select></div></div>
+    <div class="frow"><div class="fgroup"><label>Proposed Value (₦)</label><input type="number" placeholder="4500000"/></div><div class="fgroup"><label>Valid Until</label><input type="date"/></div></div>
+    <div class="fgroup"><label>Special Terms / Notes</label><textarea placeholder="Pilot discount, payment terms, SLA specifics..."></textarea></div>
+    <button class="btn btn-accent" style="width:100%" onclick="createProposal()">Create Proposal →</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <img src="data:image/jpeg;base64,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" alt="ULTI-MED" style="height:28px;width:auto;display:block;">
+    <span class="brand-name" style="color:rgba(255,255,255,.6);font-size:.85rem;margin-left:.3rem;">Portal</span>
+  </a>
+  <div class="topbar-right">
+    <a href="index.html" class="home-link">← Website</a>
+    <a href="admin/index.html" style="color:rgba(255,255,255,.45);font-size:.79rem;text-decoration:none;">⚙️ CMS</a>
+    <span class="topbar-badge">ADMIN</span>
+    <span style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25);color:#60A5FA;font-size:.68rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;letter-spacing:.04em;">HIPAA · NDPR</span>
+    <button class="notif-btn" onclick="showToast('🔔 3 new notifications')">🔔<span class="notif-dot"></span></button>
+    <div class="topbar-user">
+      <div class="user-avatar">SA</div>
+      <span>Sales Admin</span>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">Main</div>
+  <button class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="s-icon">📊</span>Dashboard</button>
+
+  <div class="sidebar-section">Sales & CRM</div>
+  <button class="sidebar-item" onclick="showPage('crm',this)"><span class="s-icon">🗂️</span>CRM — Leads<span class="sidebar-badge">12</span></button>
+  <button class="sidebar-item" onclick="showPage('proposals',this)"><span class="s-icon">📋</span>Proposal Tracking<span class="sidebar-badge green">3</span></button>
+
+  <div class="sidebar-section">Content</div>
+  <button class="sidebar-item" onclick="showPage('videos',this)"><span class="s-icon">📹</span>Video Library</button>
+  <button class="sidebar-item" onclick="showPage('downloads',this)"><span class="s-icon">📥</span>Download Centre</button>
+
+  <div class="sidebar-section">Clients</div>
+  <button class="sidebar-item" onclick="showPage('customers',this)"><span class="s-icon">🏥</span>Customer Portal</button>
+  <button class="sidebar-item" onclick="showPage('subscriptions',this)"><span class="s-icon">💳</span>Subscriptions</button>
+  <button class="sidebar-item" onclick="showPage('support',this)"><span class="s-icon">🎫</span>Support Tickets<span class="sidebar-badge">5</span></button>
+
+  <div class="sidebar-footer">
+    <a href="index.html">🌐 Back to Website</a>
+    <a href="#">⚙️ Settings</a>
+    <a href="#">📤 Logout</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>Good morning, Admin 👋</h1><p>Here's your ULTI-MED sales & operations overview for today.</p></div>
+        <div style="display:flex;gap:.6rem;">
+          <button class="btn btn-outline btn-sm" onclick="showToast('📊 Exporting report...')">Export Report</button>
+          <button class="btn btn-accent btn-sm" onclick="openM('newLeadModal')">+ Add Lead</button>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Total Leads</div><div class="stat-card-value">47</div><div class="stat-card-change change-up">↑ 8 this month</div></div>
+      <div class="stat-card"><div class="stat-card-label">Proposals Sent</div><div class="stat-card-value blue">18</div><div class="stat-card-change change-up">↑ 3 this week</div></div>
+      <div class="stat-card"><div class="stat-card-label">Active Clients</div><div class="stat-card-value green">7</div><div class="stat-card-change change-up">↑ 2 new onboarded</div></div>
+      <div class="stat-card"><div class="stat-card-label">Open Tickets</div><div class="stat-card-value red">5</div><div class="stat-card-change change-down">↓ 2 resolved today</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pipeline Value</div><div class="stat-card-value">₦62M</div><div class="stat-card-change change-up">↑ ₦8M this month</div></div>
+      <div class="stat-card"><div class="stat-card-label">Conversion Rate</div><div class="stat-card-value green">31%</div><div class="stat-card-change change-up">↑ 4% vs last month</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:1.5rem;margin-bottom:1.8rem;">
+      <div class="table-wrap">
+        <div class="table-header"><h3>Pipeline by Stage</h3><button class="btn btn-outline btn-sm" onclick="showPage('crm',document.querySelector('[onclick*=crm]'))">View All</button></div>
+        <div style="padding:1.4rem 1.5rem;">
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">New Leads</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:#3B82F6;"></div></div><span class="bar-val">12</span></div>
+            <div class="bar-row"><span class="bar-label">Contacted</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#8B5CF6;"></div></div><span class="bar-val">9</span></div>
+            <div class="bar-row"><span class="bar-label">Demo Done</span><div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--gold);"></div></div><span class="bar-val">7</span></div>
+            <div class="bar-row"><span class="bar-label">Proposal Sent</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--accent);"></div></div><span class="bar-val">11</span></div>
+            <div class="bar-row"><span class="bar-label">Negotiation</span><div class="bar-track"><div class="bar-fill" style="width:28%;background:var(--danger);"></div></div><span class="bar-val">5</span></div>
+            <div class="bar-row"><span class="bar-label">Closed Won</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:#008A67;"></div></div><span class="bar-val">3</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Recent Activity</h3></div>
+        <div style="padding:1.2rem 1.5rem;">
+          <div class="timeline">
+            <div class="timeline-item"><div class="tl-time">Today, 09:14</div><div class="tl-text">New proposal sent to <strong>Reddington Hospital, Lagos</strong></div></div>
+            <div class="timeline-item"><div class="tl-time">Today, 08:30</div><div class="tl-text">Support ticket #TK-0051 resolved — NHIS module issue</div></div>
+            <div class="timeline-item"><div class="tl-time">Yesterday, 16:45</div><div class="tl-text"><strong>Dr. Aisha Bello</strong> booked a demo — Tertiary Hospital, Kano</div></div>
+            <div class="timeline-item"><div class="tl-time">Yesterday, 14:00</div><div class="tl-text">Subscription renewed — <strong>St. Thomas Hospital, Port Harcourt</strong></div></div>
+            <div class="timeline-item gray"><div class="tl-time">2 days ago</div><div class="tl-text">Audit report delivered to <strong>Hillcrest Clinic, Abuja</strong></div></div>
+            <div class="timeline-item gray"><div class="tl-time">2 days ago</div><div class="tl-text">New lead added — <strong>Lagoon Hospital Group</strong> via website</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header"><h3>Hot Proposals — Awaiting Response</h3><button class="btn btn-outline btn-sm" onclick="showPage('proposals',document.querySelector('[onclick*=proposals]'))">View All Proposals</button></div>
+      <table><thead><tr><th>Hospital</th><th>Value</th><th>Modules</th><th>Sent</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Reddington Hospital, Lagos</strong></td><td style="font-weight:700;color:var(--accent);">₦8.5M</td><td>Full System</td><td>Today</td><td><span class="pill pill-blue">Pending Review</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📞 Opening WhatsApp follow-up...')">Follow Up</button></td></tr>
+        <tr><td><strong>LASUTH Teaching Hospital</strong></td><td style="font-weight:700;color:var(--accent);">₦22M</td><td>Full System + HMO</td><td>3 days ago</td><td><span class="pill pill-yellow">In Negotiation</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📋 Opening proposal...')">View</button></td></tr>
+        <tr><td><strong>Hillcrest Specialist Clinic</strong></td><td style="font-weight:700;color:var(--accent);">₦3.2M</td><td>NHIS + Billing</td><td>1 week ago</td><td><span class="pill pill-purple">Revision Requested</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('✏️ Opening proposal editor...')">Revise</button></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ── CRM ── -->
+  <div class="page" id="page-crm">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>CRM — Lead Pipeline</h1><p>Track every prospect from first contact to signed contract.</p></div>
+        <button class="btn btn-accent" onclick="openM('newLeadModal')">+ Add Lead</button>
+      </div>
+    </div>
+    <div class="stats-row" style="grid-template-columns:repeat(5,1fr);">
+      <div class="stat-card"><div class="stat-card-label">Total Leads</div><div class="stat-card-value">47</div></div>
+      <div class="stat-card"><div class="stat-card-label">This Month</div><div class="stat-card-value blue">12</div></div>
+      <div class="stat-card"><div class="stat-card-label">Demo Booked</div><div class="stat-card-value" style="color:var(--purple);">7</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pipeline Value</div><div class="stat-card-value">₦62M</div></div>
+      <div class="stat-card"><div class="stat-card-label">Win Rate</div><div class="stat-card-value green">31%</div></div>
+    </div>
+    <div class="kanban">
+      <div class="kanban-col">
+        <div class="kanban-col-head">New Leads<span class="kanban-count">12</span></div>
+        <div class="kanban-card"><h4>Lagoon Hospital Group</h4><p>Lagos Island — 300 beds — via website form</p><div class="kanban-card-meta"><span class="pill pill-blue" style="font-size:.68rem;">New</span><span class="kanban-card-value">₦18M</span></div></div>
+        <div class="kanban-card"><h4>FMC Lokoja</h4><p>Federal Medical Centre — 450 beds</p><div class="kanban-card-meta"><span class="pill pill-blue" style="font-size:.68rem;">New</span><span class="kanban-card-value">₦25M</span></div></div>
+        <div class="kanban-card"><h4>BestCare Clinic</h4><p>Ibadan — 60 beds — WhatsApp inquiry</p><div class="kanban-card-meta"><span class="pill pill-blue" style="font-size:.68rem;">New</span><span class="kanban-card-value">₦2.8M</span></div></div>
+        <button class="btn btn-outline btn-sm" style="width:100%;margin-top:.4rem" onclick="openM('newLeadModal')">+ Add</button>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-head">Demo Scheduled<span class="kanban-count">7</span></div>
+        <div class="kanban-card"><h4>UNTH Enugu</h4><p>Teaching Hospital — Demo: Mon 2PM</p><div class="kanban-card-meta"><span class="pill pill-purple" style="font-size:.68rem;">Demo</span><span class="kanban-card-value">₦30M</span></div></div>
+        <div class="kanban-card"><h4>Reddington Hospital</h4><p>Victoria Island Lagos — 180 beds</p><div class="kanban-card-meta"><span class="pill pill-purple" style="font-size:.68rem;">Demo</span><span class="kanban-card-value">₦8.5M</span></div></div>
+        <div class="kanban-card"><h4>St. Nicholas Hospital</h4><p>Lagos — 120 beds — CEO contacted</p><div class="kanban-card-meta"><span class="pill pill-purple" style="font-size:.68rem;">Demo</span><span class="kanban-card-value">₦6M</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-head">Proposal Sent<span class="kanban-count">11</span></div>
+        <div class="kanban-card"><h4>LASUTH</h4><p>Lagos State Teaching Hospital — Full system + HMO</p><div class="kanban-card-meta"><span class="pill pill-yellow" style="font-size:.68rem;">Negotiating</span><span class="kanban-card-value">₦22M</span></div></div>
+        <div class="kanban-card"><h4>Hillcrest Clinic</h4><p>Abuja — NHIS + Billing module</p><div class="kanban-card-meta"><span class="pill pill-yellow" style="font-size:.68rem;">Revision</span><span class="kanban-card-value">₦3.2M</span></div></div>
+        <div class="kanban-card"><h4>Baptist Medical Ogbomoso</h4><p>Faith-based — 200 beds</p><div class="kanban-card-meta"><span class="pill pill-yellow" style="font-size:.68rem;">Awaiting</span><span class="kanban-card-value">₦9M</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-head">Closed Won<span class="kanban-count">3</span></div>
+        <div class="kanban-card"><h4>St. Thomas Hospital PH</h4><p>Port Harcourt — Fully onboarded</p><div class="kanban-card-meta"><span class="pill pill-green" style="font-size:.68rem;">Active</span><span class="kanban-card-value">₦5.5M</span></div></div>
+        <div class="kanban-card"><h4>Comprehensive Health Kano</h4><p>Kano — Live since March 2025</p><div class="kanban-card-meta"><span class="pill pill-green" style="font-size:.68rem;">Active</span><span class="kanban-card-value">₦7M</span></div></div>
+        <div class="kanban-card"><h4>Memfys Hospital Enugu</h4><p>Enugu — Pilot client, 6 months live</p><div class="kanban-card-meta"><span class="pill pill-green" style="font-size:.68rem;">Active</span><span class="kanban-card-value">₦4.2M</span></div></div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header"><h3>All Leads — Detailed View</h3><div class="table-actions"><input class="search-input" placeholder="Search leads..." oninput="filterTable(this,'leads-table')"/><button class="btn btn-outline btn-sm" onclick="showToast('📊 Exporting CSV...')">Export</button></div></div>
+      <table id="leads-table"><thead><tr><th>Contact</th><th>Hospital</th><th>Location</th><th>Beds</th><th>Stage</th><th>Value</th><th>Source</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dr. E. Okafor</strong><br/><span style="font-size:.76rem;color:var(--muted);">Medical Director</span></td><td>Lagoon Hospital Group</td><td>Lagos</td><td>300</td><td><span class="pill pill-blue">New Lead</span></td><td style="font-weight:700;">₦18M</td><td>Website</td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📞 Calling...')">Call</button> <button class="btn btn-outline btn-sm" onclick="openM('newProposalModal')">Propose</button></td></tr>
+        <tr><td><strong>Mrs. F. Adeyemi</strong><br/><span style="font-size:.76rem;color:var(--muted);">Administrator</span></td><td>LASUTH</td><td>Lagos</td><td>600</td><td><span class="pill pill-yellow">Negotiation</span></td><td style="font-weight:700;">₦22M</td><td>Referral</td><td><button class="btn btn-ghost btn-sm" onclick="showToast('💬 Opening WhatsApp...')">WA Chat</button></td></tr>
+        <tr><td><strong>Dr. N. Kwame</strong><br/><span style="font-size:.76rem;color:var(--muted);">Clinical Director</span></td><td>Memfys Hospital</td><td>Enugu</td><td>85</td><td><span class="pill pill-green">Closed Won</span></td><td style="font-weight:700;">₦4.2M</td><td>Pilot</td><td><button class="btn btn-ghost btn-sm" onclick="showPage('customers',document.querySelector('[onclick*=customers]'))">View Client</button></td></tr>
+        <tr><td><strong>Dr. A. Bello</strong><br/><span style="font-size:.76rem;color:var(--muted);">Medical Director</span></td><td>UNTH Enugu</td><td>Enugu</td><td>800</td><td><span class="pill pill-purple">Demo Scheduled</span></td><td style="font-weight:700;">₦30M</td><td>LinkedIn</td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📅 Opening calendar...')">Reschedule</button></td></tr>
+        <tr><td><strong>Mr. B. Eze</strong><br/><span style="font-size:.76rem;color:var(--muted);">COO</span></td><td>Hillcrest Specialist Clinic</td><td>Abuja</td><td>45</td><td><span class="pill pill-yellow">Proposal Sent</span></td><td style="font-weight:700;">₦3.2M</td><td>WhatsApp</td><td><button class="btn btn-ghost btn-sm" onclick="openM('newProposalModal')">Revise</button></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ── PROPOSALS ── -->
+  <div class="page" id="page-proposals">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>Proposal Tracking</h1><p>Monitor all proposals — status, value, and next steps in one view.</p></div>
+        <button class="btn btn-accent" onclick="openM('newProposalModal')">+ New Proposal</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Total Proposals</div><div class="stat-card-value">18</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pending Review</div><div class="stat-card-value blue">6</div></div>
+      <div class="stat-card"><div class="stat-card-label">In Negotiation</div><div class="stat-card-value" style="color:var(--gold);">5</div></div>
+      <div class="stat-card"><div class="stat-card-label">Approved</div><div class="stat-card-value green">4</div></div>
+      <div class="stat-card"><div class="stat-card-label">Total Value</div><div class="stat-card-value">₦142M</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>All Proposals</h3><div class="table-actions"><input class="search-input" placeholder="Search proposals..." oninput="filterTable(this,'proposals-table')"/></div></div>
+      <table id="proposals-table"><thead><tr><th>Ref #</th><th>Hospital</th><th>Modules</th><th>Value</th><th>Sent</th><th>Valid Until</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-018</td><td><strong>Reddington Hospital, Lagos</strong></td><td>Full System</td><td style="font-weight:700;color:var(--accent);">₦8.5M</td><td>Today</td><td>30 Jun 2025</td><td><span class="pill pill-blue">Pending Review</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('👁️ Opening proposal...')">View</button> <button class="btn btn-outline btn-sm" onclick="showToast('📞 Follow-up scheduled')">Follow Up</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-015</td><td><strong>LASUTH Teaching Hospital</strong></td><td>Full System + HMO</td><td style="font-weight:700;color:var(--accent);">₦22M</td><td>5 Jun 2025</td><td>5 Jul 2025</td><td><span class="pill pill-yellow">In Negotiation</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📝 Opening revision...')">Revise</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-014</td><td><strong>Hillcrest Specialist Clinic</strong></td><td>NHIS + Billing</td><td style="font-weight:700;color:var(--accent);">₦3.2M</td><td>4 Jun 2025</td><td>4 Jul 2025</td><td><span class="pill pill-purple">Revision Requested</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('✏️ Opening editor...')">Edit</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-011</td><td><strong>Baptist Medical Centre Ogbomoso</strong></td><td>Full System</td><td style="font-weight:700;color:var(--accent);">₦9M</td><td>28 May 2025</td><td>28 Jun 2025</td><td><span class="pill pill-yellow">Awaiting Decision</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📞 Calling client...')">Call</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-008</td><td><strong>St. Thomas Hospital PH</strong></td><td>Full System</td><td style="font-weight:700;color:var(--accent);">₦5.5M</td><td>10 May 2025</td><td>—</td><td><span class="pill pill-green">Signed & Active</span></td><td><button class="btn btn-ghost btn-sm" onclick="showPage('customers',document.querySelector('[onclick*=customers]'))">View Client</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-005</td><td><strong>Comprehensive Health Kano</strong></td><td>NHIS + Billing + HMO</td><td style="font-weight:700;color:var(--accent);">₦7M</td><td>2 Apr 2025</td><td>—</td><td><span class="pill pill-green">Signed & Active</span></td><td><button class="btn btn-ghost btn-sm" onclick="showPage('customers',document.querySelector('[onclick*=customers]'))">View Client</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">PRO-2025-002</td><td><strong>Memfys Hospital Enugu</strong></td><td>Pilot — Full System</td><td style="font-weight:700;color:var(--accent);">₦4.2M</td><td>Jan 2025</td><td>—</td><td><span class="pill pill-green">Signed & Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+      </tbody></table>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <div class="table-wrap"><div class="table-header"><h3>Proposal Progress Tracker</h3></div>
+        <div style="padding:1.4rem 1.5rem;">
+          <div style="margin-bottom:1.2rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem;"><span style="font-size:.85rem;font-weight:600;">Reddington Hospital</span><span style="font-size:.8rem;color:var(--muted);">25%</span></div><div class="progress-bar"><div class="progress-fill" style="width:25%;"></div></div><div style="font-size:.76rem;color:var(--muted);margin-top:.3rem;">Proposal sent — awaiting review</div></div>
+          <div style="margin-bottom:1.2rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem;"><span style="font-size:.85rem;font-weight:600;">LASUTH</span><span style="font-size:.8rem;color:var(--muted);">65%</span></div><div class="progress-bar"><div class="progress-fill gold" style="width:65%;"></div></div><div style="font-size:.76rem;color:var(--muted);margin-top:.3rem;">In active negotiation — Legal reviewing SLA</div></div>
+          <div style="margin-bottom:1.2rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem;"><span style="font-size:.85rem;font-weight:600;">Baptist Medical Ogbomoso</span><span style="font-size:.8rem;color:var(--muted);">50%</span></div><div class="progress-bar"><div class="progress-fill" style="width:50%;"></div></div><div style="font-size:.76rem;color:var(--muted);margin-top:.3rem;">Awaiting board approval</div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:.4rem;"><span style="font-size:.85rem;font-weight:600;">UNTH Enugu</span><span style="font-size:.8rem;color:var(--muted);">15%</span></div><div class="progress-bar"><div class="progress-fill" style="width:15%;"></div></div><div style="font-size:.76rem;color:var(--muted);margin-top:.3rem;">Demo completed — proposal being drafted</div></div>
+        </div>
+      </div>
+      <div class="table-wrap"><div class="table-header"><h3>Win/Loss Summary — 2025</h3></div>
+        <div style="padding:1.4rem 1.5rem;">
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">Jan</span><div class="bar-track"><div class="bar-fill" style="width:25%"></div></div><span class="bar-val">1 won</span></div>
+            <div class="bar-row"><span class="bar-label">Feb</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">0</span></div>
+            <div class="bar-row"><span class="bar-label">Mar</span><div class="bar-track"><div class="bar-fill" style="width:25%"></div></div><span class="bar-val">1 won</span></div>
+            <div class="bar-row"><span class="bar-label">Apr</span><div class="bar-track"><div class="bar-fill" style="width:25%"></div></div><span class="bar-val">1 won</span></div>
+            <div class="bar-row"><span class="bar-label">May</span><div class="bar-track"><div class="bar-fill gold" style="width:50%"></div></div><span class="bar-val">2 active</span></div>
+            <div class="bar-row"><span class="bar-label">Jun</span><div class="bar-track"><div class="bar-fill gold" style="width:75%"></div></div><span class="bar-val">3 active</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIDEO LIBRARY (CMS) ── -->
+  <div class="page" id="page-videos">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>Video Library</h1><p>Manage demo and training videos shown on the public website.</p></div>
+        <button class="btn btn-accent" onclick="showToast('📹 Upload video modal coming — connect backend to enable')">+ Upload Video</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>All Videos</h3><div class="table-actions"><input class="search-input" placeholder="Search videos..." oninput="filterTable(this,'videos-table')"/><select class="search-input" style="min-width:130px;"><option>All Categories</option><option>Overview</option><option>Revenue</option><option>Safety</option><option>Compliance</option><option>AI</option></select></div></div>
+      <table id="videos-table"><thead><tr><th>Title</th><th>Category</th><th>Duration</th><th>Views</th><th>Published</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ULTI-MED Full System Overview</strong></td><td><span class="pill pill-gray">Overview</span></td><td style="font-family:var(--font-mono);">12:34</td><td>247</td><td>1 Jun 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('✏️ Opening editor...')">Edit</button> <button class="btn btn-outline btn-sm" onclick="showToast('👁️ Previewing...')">Preview</button></td></tr>
+        <tr><td><strong>The Service Gate Explained</strong></td><td><span class="pill pill-gray">Revenue</span></td><td style="font-family:var(--font-mono);">6:22</td><td>183</td><td>28 May 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Drug Interaction Alert System</strong></td><td><span class="pill pill-gray">Safety</span></td><td style="font-family:var(--font-mono);">4:15</td><td>312</td><td>20 May 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>NHIS Claims — End to End</strong></td><td><span class="pill pill-gray">Compliance</span></td><td style="font-family:var(--font-mono);">8:47</td><td>428</td><td>15 May 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>HMO Policy Engine Setup</strong></td><td><span class="pill pill-gray">Compliance</span></td><td style="font-family:var(--font-mono);">7:30</td><td>196</td><td>10 May 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>AI Speech Recognition in Clinic</strong></td><td><span class="pill pill-gray">AI</span></td><td style="font-family:var(--font-mono);">5:08</td><td>144</td><td>5 May 2025</td><td><span class="pill pill-green">Published</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Implementation Walkthrough (Internal)</strong></td><td><span class="pill pill-gray">Training</span></td><td style="font-family:var(--font-mono);">18:22</td><td>34</td><td>1 Apr 2025</td><td><span class="pill pill-yellow">Draft</span></td><td><button class="btn btn-ghost btn-sm">Publish</button> <button class="btn btn-outline btn-sm">Edit</button></td></tr>
+      </tbody></table>
+    </div>
+    <div class="form-card">
+      <h3>Add / Edit Video</h3>
+      <p>Add a new video to the library or update an existing entry.</p>
+      <div class="frow"><div class="fgroup"><label>Video Title</label><input type="text" placeholder="e.g. NHIS Claims Walkthrough"/></div><div class="fgroup"><label>Category</label><select><option>Overview</option><option>Revenue</option><option>Safety</option><option>Compliance</option><option>AI</option><option>Training</option></select></div></div>
+      <div class="frow"><div class="fgroup"><label>Duration</label><input type="text" placeholder="e.g. 8:45"/></div><div class="fgroup"><label>Video URL / Embed Code</label><input type="text" placeholder="https://youtube.com/embed/..."/></div></div>
+      <div class="fgroup"><label>Description</label><textarea placeholder="Brief description of what this video covers..."></textarea></div>
+      <div class="frow"><div class="fgroup"><label>Thumbnail Emoji / Icon</label><input type="text" placeholder="🏥"/></div><div class="fgroup"><label>Status</label><select><option>Published</option><option>Draft</option></select></div></div>
+      <button class="btn btn-accent" onclick="showToast('✅ Video saved to library!')">Save Video</button>
+    </div>
+  </div>
+
+  <!-- ── DOWNLOADS (CMS) ── -->
+  <div class="page" id="page-downloads">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>Download Centre</h1><p>Manage all public-facing documents, brochures, and resources.</p></div>
+        <button class="btn btn-accent" onclick="showToast('📁 Upload file coming — connect backend to enable')">+ Upload File</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>All Downloads</h3><div class="table-actions"><input class="search-input" placeholder="Search files..."/></div></div>
+      <table><thead><tr><th>File Name</th><th>Type</th><th>Size</th><th>Downloads</th><th>Last Updated</th><th>Visible</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ULTI-MED Product Brochure</strong></td><td><span class="pill pill-red">PDF</span></td><td style="font-family:var(--font-mono);">2.4 MB</td><td>89</td><td>1 Jun 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('✏️ Editing...')">Edit</button></td></tr>
+        <tr><td><strong>Executive Presentation Deck</strong></td><td><span class="pill pill-yellow">PPT</span></td><td style="font-family:var(--font-mono);">5.1 MB</td><td>54</td><td>28 May 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>NHIS Compliance Checklist</strong></td><td><span class="pill pill-red">PDF</span></td><td style="font-family:var(--font-mono);">1.1 MB</td><td>147</td><td>20 May 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Revenue Leak Calculator</strong></td><td><span class="pill pill-green">XLS</span></td><td style="font-family:var(--font-mono);">890 KB</td><td>73</td><td>15 May 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Implementation Roadmap</strong></td><td><span class="pill pill-blue">DOC</span></td><td style="font-family:var(--font-mono);">1.3 MB</td><td>31</td><td>10 May 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Data Security & NDPR Guide</strong></td><td><span class="pill pill-red">PDF</span></td><td style="font-family:var(--font-mono);">980 KB</td><td>22</td><td>5 May 2025</td><td><span class="pill pill-green">Public</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td><strong>Internal Pricing Sheet (Confidential)</strong></td><td><span class="pill pill-red">PDF</span></td><td style="font-family:var(--font-mono);">450 KB</td><td>—</td><td>1 Apr 2025</td><td><span class="pill pill-gray">Private</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+      </tbody></table>
+    </div>
+    <div class="form-card">
+      <h3>Add / Replace File</h3>
+      <p>Upload a new file or update an existing one in the Download Centre.</p>
+      <div class="frow"><div class="fgroup"><label>File Title</label><input type="text" placeholder="e.g. NHIS Compliance Guide 2025"/></div><div class="fgroup"><label>File Type</label><select><option>PDF</option><option>PPT/PPTX</option><option>DOC/DOCX</option><option>XLS/XLSX</option></select></div></div>
+      <div class="fgroup"><label>Description</label><textarea placeholder="Brief description of the document content..."></textarea></div>
+      <div class="frow"><div class="fgroup"><label>Visibility</label><select><option>Public</option><option>Private (Admin only)</option><option>Client Portal only</option></select></div><div class="fgroup"><label>File Size</label><input type="text" placeholder="e.g. 2.4 MB"/></div></div>
+      <button class="btn btn-accent" onclick="showToast('✅ File entry saved!')">Save File Entry</button>
+    </div>
+  </div>
+
+  <!-- ── CUSTOMER PORTAL ── -->
+  <div class="page" id="page-customers">
+    <div class="page-header"><h1>Customer Portal</h1><p>All active clients, their modules, subscription status, and support history.</p></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Active Clients</div><div class="stat-card-value green">7</div></div>
+      <div class="stat-card"><div class="stat-card-label">On Pilot</div><div class="stat-card-value blue">2</div></div>
+      <div class="stat-card"><div class="stat-card-label">Up for Renewal</div><div class="stat-card-value" style="color:var(--gold);">3</div></div>
+      <div class="stat-card"><div class="stat-card-label">Avg. Satisfaction</div><div class="stat-card-value green">4.6/5</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>Active Client Accounts</h3><div class="table-actions"><input class="search-input" placeholder="Search clients..."/></div></div>
+      <table><thead><tr><th>Hospital</th><th>Location</th><th>Plan</th><th>Modules</th><th>Go-Live Date</th><th>Renewal</th><th>Health</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>St. Thomas Hospital PH</strong></td><td>Port Harcourt</td><td><span class="pill pill-purple">Prime Edition</span></td><td>Full System</td><td>May 2025</td><td>May 2026</td><td><span class="pill pill-green">Healthy</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('📋 Opening client file...')">View</button></td></tr>
+        <tr><td><strong>Comprehensive Health Kano</strong></td><td>Kano</td><td><span class="pill pill-blue">Specialist</span></td><td>NHIS + Billing + HMO</td><td>Mar 2025</td><td>Mar 2026</td><td><span class="pill pill-green">Healthy</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td><strong>Memfys Hospital Enugu</strong></td><td>Enugu</td><td><span class="pill pill-green">Pilot</span></td><td>Full System</td><td>Jan 2025</td><td>Jul 2025</td><td><span class="pill pill-yellow">At Risk</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td><strong>Baptist Medical Centre</strong></td><td>Ogbomoso</td><td><span class="pill pill-blue">Specialist</span></td><td>Full System</td><td>Apr 2025</td><td>Apr 2026</td><td><span class="pill pill-green">Healthy</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+      </tbody></table>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <div class="table-wrap">
+        <div class="table-header"><h3>Upcoming Renewals</h3></div>
+        <div style="padding:1.2rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem;background:rgba(244,169,34,.07);border:1px solid rgba(244,169,34,.2);border-radius:10px;"><div><div style="font-size:.9rem;font-weight:700;">Memfys Hospital</div><div style="font-size:.78rem;color:var(--muted);">Pilot ends — renewal needed</div></div><span class="pill pill-yellow">25 days</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem;background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.15);border-radius:10px;"><div><div style="font-size:.9rem;font-weight:700;">Baptist Medical Centre</div><div style="font-size:.78rem;color:var(--muted);">Annual renewal — April 2026</div></div><span class="pill pill-green">10 months</span></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Module Adoption by Client</h3></div>
+        <div style="padding:1.2rem 1.5rem;">
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">NHIS Module</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">4/4</span></div>
+            <div class="bar-row"><span class="bar-label">Service Gate</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">4/4</span></div>
+            <div class="bar-row"><span class="bar-label">HMO Engine</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-val">3/4</span></div>
+            <div class="bar-row"><span class="bar-label">Speech Recog.</span><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div><span class="bar-val">2/4</span></div>
+            <div class="bar-row"><span class="bar-label">ICD-11 Engine</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-val">3/4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUBSCRIPTIONS ── -->
+  <div class="page" id="page-subscriptions">
+    <div class="page-header"><h1>Subscription Management</h1><p>Manage plans, billing cycles, and client subscription tiers.</p></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Monthly Recurring</div><div class="stat-card-value green">₦4.1M</div></div>
+      <div class="stat-card"><div class="stat-card-label">Annual Recurring</div><div class="stat-card-value">₦49.2M</div></div>
+      <div class="stat-card"><div class="stat-card-label">Active Plans</div><div class="stat-card-value blue">7</div></div>
+      <div class="stat-card"><div class="stat-card-label">Expiring This Month</div><div class="stat-card-value red">1</div></div>
+    </div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:1.2rem;color:var(--ink);">Available Plans</h3>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <span class="plan-badge pop-badge">Starter</span>
+        <div class="plan-name">Core Edition</div>
+        <div class="plan-price">₦350K<span>/month</span></div>
+        <ul class="plan-features">
+          <li>Up to 50 beds</li><li>OPD & IPD Billing</li><li>Basic NHIS Module</li><li>Data Validation</li><li>Email Support</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%" onclick="showToast('📋 Assign plan to client...')">Assign to Client</button>
+      </div>
+      <div class="plan-card popular">
+        <span class="plan-badge pop-badge">Most Popular</span>
+        <div class="plan-name">Professional</div>
+        <div class="plan-price">₦680K<span>/month</span></div>
+        <ul class="plan-features">
+          <li>Up to 200 beds</li><li>Full Billing Suite</li><li>Full NHIS + ICD-11</li><li>HMO Policy Engine</li><li>Service Gate</li><li>Drug Interaction Alerts</li><li>Priority Support</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%" onclick="showToast('📋 Assign plan to client...')">Assign to Client</button>
+      </div>
+      <div class="plan-card current">
+        <span class="plan-badge active-badge">Full Platform</span>
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">₦1.4M<span>/month</span></div>
+        <ul class="plan-features">
+          <li>Unlimited beds</li><li>All modules included</li><li>AI Speech Recognition</li><li>Multi-campus support</li><li>Custom HMO agreements</li><li>Dedicated account manager</li><li>24/7 SLA support</li>
+        </ul>
+        <button class="btn btn-accent" style="width:100%" onclick="showToast('📋 Assigning Enterprise plan...')">Assign to Client</button>
+      </div>
+      <div class="plan-card">
+        <span class="plan-badge pop-badge">Limited Time</span>
+        <div class="plan-name">Pilot Programme</div>
+        <div class="plan-price">₦150K<span>/month</span></div>
+        <ul class="plan-features">
+          <li>3-month engagement</li><li>Full system access</li><li>Case study required</li><li>Dedicated onboarding</li><li>Reference hospital status</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%" onclick="showToast('📋 Opening pilot onboarding...')">Start Pilot</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>Active Subscriptions</h3></div>
+      <table><thead><tr><th>Client</th><th>Plan</th><th>Start Date</th><th>Next Billing</th><th>Monthly Value</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>St. Thomas Hospital PH</strong></td><td><span class="pill pill-purple">Prime Edition</span></td><td>May 1, 2025</td><td>Jul 1, 2025</td><td style="font-weight:700;color:var(--accent);">₦1.4M</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('✏️ Opening subscription editor...')">Manage</button></td></tr>
+        <tr><td><strong>Comprehensive Health Kano</strong></td><td><span class="pill pill-blue">Specialist</span></td><td>Mar 1, 2025</td><td>Jul 1, 2025</td><td style="font-weight:700;color:var(--accent);">₦680K</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+        <tr><td><strong>Memfys Hospital Enugu</strong></td><td><span class="pill pill-green">Pilot</span></td><td>Jan 1, 2025</td><td>Jul 1, 2025</td><td style="font-weight:700;color:var(--accent);">₦150K</td><td><span class="pill pill-yellow">Expiring Soon</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('🔄 Upgrading to Professional...')">Upgrade</button></td></tr>
+        <tr><td><strong>Baptist Medical Centre</strong></td><td><span class="pill pill-blue">Specialist</span></td><td>Apr 1, 2025</td><td>Jul 1, 2025</td><td style="font-weight:700;color:var(--accent);">₦680K</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ── SUPPORT TICKETS ── -->
+  <div class="page" id="page-support">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div><h1>Support Ticket System</h1><p>Track, manage, and resolve all client support requests.</p></div>
+        <button class="btn btn-accent" onclick="openM('newTicketModal')">+ Raise Ticket</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Open Tickets</div><div class="stat-card-value red">5</div></div>
+      <div class="stat-card"><div class="stat-card-label">In Progress</div><div class="stat-card-value blue">3</div></div>
+      <div class="stat-card"><div class="stat-card-label">Resolved Today</div><div class="stat-card-value green">2</div></div>
+      <div class="stat-card"><div class="stat-card-label">Avg. Resolution Time</div><div class="stat-card-value">4.2h</div></div>
+      <div class="stat-card"><div class="stat-card-label">SLA Compliance</div><div class="stat-card-value green">94%</div></div>
+    </div>
+    <div class="ticket-detail open" id="ticket-detail-preview">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;">
+        <div>
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
+            <span style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted);">TK-0051</span>
+            <span class="pill pill-red">High Priority</span>
+            <span class="pill pill-blue">In Progress</span>
+          </div>
+          <h3 style="font-size:1.1rem;font-weight:700;color:var(--ink);">NHIS claims not submitting — St. Thomas Hospital PH</h3>
+          <p style="font-size:.85rem;color:var(--muted);">Opened: Jun 9, 2025 at 14:22 · Module: NHIS Module · Assigned to: Dev Team</p>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="showToast('✅ Ticket marked resolved!')">Mark Resolved</button>
+      </div>
+      <div style="background:var(--surface);border-radius:10px;padding:1.1rem;margin-bottom:1.2rem;">
+        <p style="font-size:.88rem;color:var(--text);line-height:1.7;">When our NHIS billing team tries to submit claims for the month of May, the system shows an error: <em>"ICD code not found — submission blocked"</em>. This affects approximately 47 patient claims totalling ₦840,000 in outstanding reimbursements. The module was working last week before the update.</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item"><div class="tl-time">Jun 10, 09:30</div><div class="tl-text">Dev team identified root cause — ICD-11 mapping table not refreshed after v2.4.1 update. Fix being deployed.</div></div>
+        <div class="timeline-item"><div class="tl-time">Jun 9, 16:00</div><div class="tl-text">Support team remotely accessed environment. Reproduced the error. Escalated to dev team.</div></div>
+        <div class="timeline-item gray"><div class="tl-time">Jun 9, 14:22</div><div class="tl-text">Ticket raised by Finance Manager, St. Thomas Hospital PH.</div></div>
+      </div>
+      <div style="margin-top:1.2rem;display:flex;gap:.75rem;">
+        <input type="text" class="search-input" style="flex:1;" placeholder="Add a response or update..."/>
+        <button class="btn btn-accent" onclick="showToast('💬 Response added!')">Send Update</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><h3>All Tickets</h3><div class="table-actions"><input class="search-input" placeholder="Search tickets..." oninput="filterTable(this,'tickets-table')"/><select class="search-input" style="min-width:130px;"><option>All Status</option><option>Open</option><option>In Progress</option><option>Resolved</option><option>Closed</option></select></div></div>
+      <table id="tickets-table"><thead><tr><th>Ticket #</th><th>Issue</th><th>Client</th><th>Module</th><th>Priority</th><th>Opened</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0051</td><td><strong>NHIS claims not submitting</strong></td><td>St. Thomas Hospital PH</td><td>NHIS Module</td><td><span class="ticket-priority tp-high">High</span></td><td>Jun 9</td><td><span class="pill pill-blue">In Progress</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('👁️ Opening ticket...')">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0050</td><td><strong>HMO tariff applying wrong rate</strong></td><td>Comprehensive Health Kano</td><td>HMO Policy</td><td><span class="ticket-priority tp-med">Med</span></td><td>Jun 8</td><td><span class="pill pill-red">Open</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0049</td><td><strong>Speech recognition not saving notes</strong></td><td>Memfys Hospital Enugu</td><td>AI / Speech</td><td><span class="ticket-priority tp-med">Med</span></td><td>Jun 7</td><td><span class="pill pill-blue">In Progress</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0048</td><td><strong>Service Gate blocking approved credit patient</strong></td><td>Baptist Medical Centre</td><td>Service Gate</td><td><span class="ticket-priority tp-high">High</span></td><td>Jun 6</td><td><span class="pill pill-blue">In Progress</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0047</td><td><strong>ICD-11 search slow on Firefox</strong></td><td>St. Thomas Hospital PH</td><td>ICD-11 Engine</td><td><span class="ticket-priority tp-low">Low</span></td><td>Jun 5</td><td><span class="pill pill-red">Open</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0046</td><td><strong>Staff login error — password reset loop</strong></td><td>Comprehensive Health Kano</td><td>Access Control</td><td><span class="ticket-priority tp-med">Med</span></td><td>Jun 4</td><td><span class="pill pill-green">Resolved</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0045</td><td><strong>Drug alert not firing for paediatric doses</strong></td><td>Memfys Hospital Enugu</td><td>Drug Interaction</td><td><span class="ticket-priority tp-high">High</span></td><td>Jun 2</td><td><span class="pill pill-green">Resolved</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+        <tr><td style="font-family:var(--font-mono);font-size:.78rem;">TK-0044</td><td><strong>HIPAA audit trail not logging all access events</strong></td><td>St. Thomas Hospital PH</td><td>HIPAA / NDPR</td><td><span class="ticket-priority tp-med">Med</span></td><td>May 30</td><td><span class="pill pill-green">Resolved</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function filterTable(input,tableId){
+  const q=input.value.toLowerCase();
+  const t=document.getElementById(tableId);
+  if(!t)return;
+  t.querySelectorAll('tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});
+}
+
+function addLead(){
+  closeM('newLeadModal');
+  showToast('✅ New lead added to CRM pipeline!');
+}
+function createProposal(){
+  closeM('newProposalModal');
+  showToast('✅ Proposal created — track it in Proposal Tracking');
+}
+function submitTicket(){
+  const title=document.getElementById('tk-title').value;
+  if(!title){showToast('⚠️ Please enter an issue title.');return;}
+  closeM('newTicketModal');
+  showToast('🎫 Ticket submitted! Our team will respond within 4 hours.');
+}
+
+// Handle URL hash navigation
+const hashMap={crm:'crm',proposals:'proposals',subscriptions:'subscriptions',support:'support'};
+const h=window.location.hash.replace('#','');
+if(hashMap[h]){
+  const btn=document.querySelector(`[onclick*="'${hashMap[h]}'"]`);
+  showPage(hashMap[h],btn);
+}
+
+// ══════════════════════════════════════════
+// SUPABASE LIVE DATABASE CONNECTION
+// ══════════════════════════════════════════
+const SUPA_URL = 'https://bszvlohnmsrwdsjmxrvz.supabase.co';
+const SUPA_KEY = 'sb_publishable_BvT_cKAgC0xRRX6yc_rNBA_NmdTENlt';
+
+async function dbGet(table, params='') {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}&order=created_at.desc`, {
+    headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
+  });
+  return res.json();
+}
+async function dbInsert(table, body) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+    method:'POST', headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(body)
+  });
+  return res.json();
+}
+async function dbUpdate(table, id, body) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method:'PATCH', headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  return res.ok;
+}
+
+// ── LOAD LIVE DATA INTO PORTAL PAGES ──
+async function loadLiveLeads() {
+  try {
+    const data = await dbGet('leads');
+    if (!data || !data.length) return;
+    const tbody = document.querySelector('#leads-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = data.map(l => `
+      <tr>
+        <td><strong>${l.first_name||''} ${l.last_name||''}</strong><br/><span style="font-size:.75rem;color:var(--muted)">${l.role||''}</span></td>
+        <td>${l.hospital||'—'}</td>
+        <td>${l.phone||'—'}</td>
+        <td>${l.bed_count||'—'}</td>
+        <td><span class="pill pill-blue">${l.stage||'New Lead'}</span></td>
+        <td style="font-weight:700;">${l.pipeline_value||'—'}</td>
+        <td>${l.source||'Website'}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('📞 Calling ${(l.phone||'').replace(/'/g,'')}')">Call</button>
+          <button class="btn btn-outline btn-sm" onclick="openM('newProposalModal')">Propose</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { console.error('Error loading leads:', e); }
+}
+
+async function loadLiveProposals() {
+  try {
+    const data = await dbGet('proposals');
+    if (!data || !data.length) return;
+    const wrap = document.querySelector('#page-proposals .table-wrap table tbody');
+    if (!wrap) return;
+    wrap.innerHTML = data.map(p => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:.78rem;">${p.ref_number||'—'}</td>
+        <td><strong>${p.hospital}</strong></td>
+        <td>${p.modules||'—'}</td>
+        <td style="font-weight:700;color:var(--accent);">${p.proposed_value||'Pending'}</td>
+        <td>${new Date(p.created_at).toLocaleDateString()}</td>
+        <td>${p.valid_until||'—'}</td>
+        <td><span class="pill pill-blue">${p.status||'New'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="showToast('📋 Opening proposal...')">View</button></td>
+      </tr>`).join('');
+  } catch(e) { console.error('Error loading proposals:', e); }
+}
+
+async function loadLiveTickets() {
+  try {
+    const data = await dbGet('tickets');
+    if (!data || !data.length) return;
+    const wrap = document.querySelector('#page-support #tickets-table tbody');
+    if (!wrap) return;
+    wrap.innerHTML = data.map(t => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:.78rem;">${t.ticket_number||'—'}</td>
+        <td><strong>${t.title}</strong></td>
+        <td>${t.hospital||'—'}</td>
+        <td>${t.module_affected||'—'}</td>
+        <td><span class="ticket-priority ${t.priority==='High'||t.priority==='Critical'?'tp-high':t.priority==='Medium'?'tp-med':'tp-low'}">${t.priority||'Med'}</span></td>
+        <td>${new Date(t.created_at).toLocaleDateString()}</td>
+        <td><span class="pill pill-${t.status==='Open'?'red':t.status==='In Progress'?'blue':'green'}">${t.status||'Open'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="showToast('👁️ Opening ticket...')">View</button></td>
+      </tr>`).join('');
+  } catch(e) { console.error('Error loading tickets:', e); }
+}
+
+async function loadLiveDashboardStats() {
+  try {
+    const [leads, proposals, tickets] = await Promise.all([
+      dbGet('leads', 'limit=100'),
+      dbGet('proposals', 'limit=100'),
+      dbGet('tickets', 'status=eq.Open&limit=100')
+    ]);
+    // Update stat cards
+    const statCards = document.querySelectorAll('#page-dashboard .stat-card');
+    if (statCards[0]) statCards[0].querySelector('.stat-card-value').textContent = leads?.length || 0;
+    if (statCards[2]) statCards[2].querySelector('.stat-card-value').textContent = proposals?.filter(p=>p.status==='Approved'||p.status==='Signed').length || 0;
+    if (statCards[3]) statCards[3].querySelector('.stat-card-value').textContent = tickets?.length || 0;
+  } catch(e) { console.error('Dashboard stats error:', e); }
+}
+
+// ── SAVE NEW TICKET TO DB ──
+const _origSubmitTicket = submitTicket;
+async function submitTicket() {
+  const title = document.getElementById('tk-title').value;
+  const hospital = document.getElementById('tk-hospital').value;
+  if (!title) { showToast('Please enter an issue title.'); return; }
+  await dbInsert('tickets', {
+    title,
+    hospital,
+    module_affected: document.getElementById('tk-module').value,
+    priority: document.getElementById('tk-priority').value,
+    description: document.getElementById('tk-desc').value,
+    status: 'Open'
+  });
+  closeM('newTicketModal');
+  showToast('Ticket submitted! Our team will respond within 4 hours.');
+  loadLiveTickets();
+}
+
+// ── SAVE NEW LEAD TO DB ──
+async function addLead() {
+  await dbInsert('leads', {
+    stage: 'New Lead',
+    source: 'Portal - Manual Entry'
+  });
+  closeM('newLeadModal');
+  showToast('New lead added to CRM pipeline!');
+  loadLiveLeads();
+}
+
+// ── LOAD ALL LIVE DATA ──
+setTimeout(async () => {
+  await Promise.all([
+    loadLiveLeads(),
+    loadLiveProposals(),
+    loadLiveTickets(),
+    loadLiveDashboardStats()
+  ]);
+}, 800);
+
+</script>
+</body>
+</html>
